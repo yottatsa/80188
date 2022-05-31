@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP SN74ABT16841DL
+D 20-Bit Bus-Interface D-Type Latches With 3-State Outputs
+K
+F http://www.ti.com/lit/gpn/sn74abt16841
+$ENDCMP
+#
+#End Doc Library

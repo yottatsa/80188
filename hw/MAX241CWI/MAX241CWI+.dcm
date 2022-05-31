@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MAX241CWI+
+D MAX241CWI+, Multichannel Line Transceiver, EIA/TIA-232-E, RS-232, V.24, V.28 4-TX 5-RX 4-TRX, 5V, 28-Pin SOIC W
+K
+F http://uk.rs-online.com/web/p/products/1923074
+$ENDCMP
+#
+#End Doc Library

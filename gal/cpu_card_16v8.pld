@@ -1,0 +1,47 @@
+Name     cpu_card ;
+PartNo   00 ;
+Date     20/04/2022 ;
+Revision 01 ;
+Designer Engineer ;
+Company  No ;
+Assembly None ;
+Location  ;
+Device g16v8ms;
+
+PIN 11 = OE; /* ALWAYS ACTIVE LOW */
+
+
+PIN  1 = !ALEI;
+PIN  2 = ALE; /* !ALEI => !ALEO */
+PIN 19 = !ALEO;
+
+
+PIN  3 = S2;
+PIN  4 = WR;
+PIN  5 = RD;
+
+PIN  6 = CS_I;
+PIN  7 = CS_S;
+PIN  8 = CARDSELECTED;
+PIN  9 = DEN;
+
+PIN 18 = M_IO;
+PIN 16 = SMEMW;
+PIN 15 = SMEMR;
+PIN 14 = IOW;
+PIN 13 = IOR;
+
+PIN 17 = BDEN;
+
+
+!ALEO = ! ALE;
+
+M_IO.d = S2;
+
+IOR   =  M_IO # RD # CARDSELECTED # DEN;
+SMEMR = !M_IO # RD # CARDSELECTED # DEN;
+IOW   =  M_IO # WR # CARDSELECTED # DEN;
+SMEMW = !M_IO # WR # CARDSELECTED # DEN;
+
+BDEN  = CARDSELECTED # DEN;
+
