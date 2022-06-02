@@ -1,8 +1,8 @@
 Name     cpu_card ;
 PartNo   00 ;
 Date     20/04/2022 ;
-Revision 01 ;
-Designer Engineer ;
+Revision 07 ;
+Designer AI ;
 Company  No ;
 Assembly None ;
 Location  ;
@@ -25,6 +25,8 @@ PIN  7 = CS_S;
 PIN  8 = CARDSELECTED;
 PIN  9 = DEN;
 
+PIN 12 = TRG;
+
 PIN 18 = M_IO;
 PIN 16 = SMEMW;
 PIN 15 = SMEMR;
@@ -40,8 +42,10 @@ M_IO.d = S2;
 
 IOR   =  M_IO # RD # CARDSELECTED # DEN;
 SMEMR = !M_IO # RD # CARDSELECTED # DEN;
-IOW   =  M_IO # WR # CARDSELECTED # DEN;
+IOW   =  M_IO # WR # DEN;
 SMEMW = !M_IO # WR # CARDSELECTED # DEN;
 
-BDEN  = CARDSELECTED # DEN;
+BDEN  = (CARDSELECTED & M_IO) # DEN;
+
+TRG  = !IOW;	
 
