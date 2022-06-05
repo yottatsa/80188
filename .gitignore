@@ -1,2 +1,6 @@
 .DS_Store
 fp-info-cache
+*.d
+fw/reset
+*.swp
+*.bak
