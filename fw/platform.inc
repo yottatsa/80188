@@ -2,8 +2,8 @@ LMCS_STACK	equ	0x1fff
 
 I8251_D		equ	0x0000
 I8251_C		equ	0x0002
-I8251_8n1_1x	equ	0x4d		; 01 00 11 01	
 I8251_8n1_16x	equ	0x4e		; 01 00 11 10
+I8251_8e1_16x	equ	0x7e		; 01 11 11 10
 
 BAUD_9600_16x	equ	13
 
@@ -47,7 +47,7 @@ BAUD_9600_16x	equ	13
 ;; blocking putch into serial
 ;; destroys AX, DX
 		mov	dx, I8251_C
-		mov	al, 0x33	; transmit, RTS, ER, DTR??
+		mov	al, 0x01	; transmit
 		out	dx, al
 
 .wait_ready:	in	al, dx

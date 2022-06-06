@@ -1,6 +1,6 @@
 CPU 186
 USE16
-GLOBAL _restart, _putch, _version
+GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, _restart, _putch, _getch, _version
 
 %ifndef NOMAP
 [map all reset.map]
@@ -15,7 +15,8 @@ GLOBAL _restart, _putch, _version
 
 segment .text		start=0xc0000	align=256
 ; 256k flash monitor stub
-_mon:		jmp _mon
+_mon:
+		jmp	_mon
 		
 
 segment .data		start=0xffc00	align=256
@@ -28,7 +29,7 @@ MMCS:	dw 0x0000 	; not handled yet
 MPCS:	dw MPCS_DEF
 
 
-segment .setup		start=0xffe00	progbits
+segment .setup		start=0xffd00	progbits
 ; main setup code
 
 _setup:
@@ -91,30 +92,31 @@ _set_sp:
 	mov sp, LMCS_STACK
 
 _init_serial:
-	_baud_timer BAUD_9600_16x
-	_serial_init I8251_8n1_16x
-	nop
-	nop
+		_baud_timer	BAUD_9600_16x
+		_serial_init	I8251_8n1_16x
+		nop
+		nop
+		mov		cx, 0x01ff
+.loop:
+	       _serial_put_ch	cx
+		loop		.loop
 
 _test_serial:
-		_serial_put_ch 0x10
-
 		mov bx,_version
-.loop
+.loop:
 		mov	ax,[ds:bx]
 		jz	.end
 		mov	cx,ax
 		call	0xf000:_putch
 		inc	bx
 		jmp	.loop
-.end
-		mov	cx, 0x10
+.end:
+		mov	cx, 0x1313
+		call	0xf000:_putch
 		call	0xf000:_putch
 
 _finish:
-	say_what 0x7331
-
-	jmp 0xc000:_mon
+		jmp	0xc000:_mon
 
 
 ;; BIOS functions
@@ -128,15 +130,34 @@ _putch:
 		pop	ax	
 		retf
 
+_getch:
+		push	dx
+
+		mov	dx, I8251_C
+		mov	al, 0x34	; RTS, Reset Error Flag, RX
+		out	dx, al
+
+.wait_ready:	in	al, dx
+		and	al, 0x02	; RXRDY
+		jz	.wait_ready
+
+		mov	dx,I8251_D
+		in	al, dx
+
+		xor	ah, ah
+		pop	dx
+		retf
+
 
 segment .restart	start=0xffff0	progbits
 ; 80188 entrypoint
 ; CS = 0xffff
 ; we have only 15 bytes here, so just
 ; setting the cs and doing a "long jump"
-_restart:	cli
-		jmp	0xffe0:0
+_restart:
+		cli
+		jmp	0xffd0:0
 	
 segment .version
 ; padding and version
-_version:	db	"V0.0.12",0x0
+_version:	db	"V0.0.13",0x0

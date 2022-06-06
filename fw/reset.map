@@ -13,7 +13,7 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
            FFC00             FFC00             FFC0A  0000000A  progbits  .data
-           FFE00             FFE00             FFED9  000000D9  progbits  .setup
+           FFD00             FFD00             FFDEF  000000EF  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -44,11 +44,11 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                  D9
-start:                FFE00
+length:                  EF
+start:                FFD00
 align:     not defined
 follows:   not defined
-vstart:               FFE00
+vstart:               FFD00
 valign:    not defined
 vfollows:  not defined
 
@@ -98,8 +98,8 @@ Value     Name
 00001FFF  LMCS_STACK
 00000000  I8251_D
 00000002  I8251_C
-0000004D  I8251_8n1_1x
 0000004E  I8251_8n1_16x
+0000007E  I8251_8e1_16x
 0000000D  BAUD_9600_16x
 
 
@@ -120,20 +120,23 @@ Real              Virtual           Name
 ---- Section .setup -----------------------------------------------------------
 
 Real              Virtual           Name
-           FFE00             FFE00  _setup
-           FFE27             FFE27  _soc_failure
-           FFE30             FFE30  _soc_passed
-           FFE37             FFE37  _set_mem
-           FFE53             FFE53  _set_pcs
-           FFE63             FFE63  _set_sp
-           FFE6B             FFE6B  _init_serial
-           FFE8B             FFE8B  _test_serial
-           FFE91             FFE91  _test_serial.wait_ready
-           FFEA0             FFEA0  _test_serial.loop
-           FFEAF             FFEAF  _test_serial.end
-           FFEB7             FFEB7  _finish
-           FFEC3             FFEC3  _putch
-           FFECB             FFECB  _putch.wait_ready
+           FFD00             FFD00  _setup
+           FFD27             FFD27  _soc_failure
+           FFD30             FFD30  _soc_passed
+           FFD37             FFD37  _set_mem
+           FFD53             FFD53  _set_pcs
+           FFD63             FFD63  _set_sp
+           FFD6B             FFD6B  _init_serial
+           FFD8E             FFD8E  _init_serial.loop
+           FFD94             FFD94  _init_serial.wait_ready
+           FFDA1             FFDA1  _test_serial
+           FFDA4             FFDA4  _test_serial.loop
+           FFDB3             FFDB3  _test_serial.end
+           FFDC0             FFDC0  _finish
+           FFDC5             FFDC5  _putch
+           FFDCD             FFDCD  _putch.wait_ready
+           FFDDB             FFDDB  _getch
+           FFDE2             FFDE2  _getch.wait_ready
 
 ---- Section .restart ---------------------------------------------------------
 
