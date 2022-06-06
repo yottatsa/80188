@@ -1,6 +1,8 @@
-# 80188 single board computer
+# 80188 single board modular computer
 
-v.0.0.7
+v.0.0.11
 
 ## References
 * [Tandy 2000 BIOS](https://www.retrotronics.org/svn/t2kbios/)
+* AMD 80C186/80C188 Preliminary
+* Intel 80C186EA/80C188EA Microprocessor User's Manual

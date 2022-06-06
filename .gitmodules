@@ -1,0 +1,3 @@
+[submodule "gal/GALasm"]
+	path = gal/GALasm
+	url = https://github.com/daveho/GALasm

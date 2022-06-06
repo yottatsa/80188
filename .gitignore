@@ -1,6 +1,15 @@
 .DS_Store
 fp-info-cache
-*.d
-fw/reset
 *.swp
 *.bak
+
+fw/*.d
+fw/*.gen
+fw/*.o
+fw/*.glob
+fw/reset
+fw/monitor
+
+gal/*.chp
+gal/*.fus
+gal/*.pin

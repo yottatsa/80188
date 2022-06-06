@@ -1,0 +1,128 @@
+
+- NASM Map file ---------------------------------------------------------------
+
+Source file:  reset.S
+Output file:  reset
+
+-- Program origin -------------------------------------------------------------
+
+000C0000
+
+-- Sections (summary) ---------------------------------------------------------
+
+Vstart            Start             Stop              Length    Class     Name
+           C0000             C0000             C0002  00000002  progbits  .text
+           FFC00             FFC00             FFC0A  0000000A  progbits  .data
+           FFE00             FFE00             FFEBC  000000BC  progbits  .setup
+           FFFF0             FFFF0            100000  00000010  progbits  .restart
+
+-- Sections (detailed) --------------------------------------------------------
+
+---- Section .text ------------------------------------------------------------
+
+class:     progbits
+length:                   2
+start:                C0000
+align:                  100
+follows:   not defined
+vstart:               C0000
+valign:    not defined
+vfollows:  not defined
+
+---- Section .data ------------------------------------------------------------
+
+class:     progbits
+length:                   A
+start:                FFC00
+align:                  100
+follows:   not defined
+vstart:               FFC00
+valign:    not defined
+vfollows:  not defined
+
+---- Section .setup -----------------------------------------------------------
+
+class:     progbits
+length:                  BC
+start:                FFE00
+align:     not defined
+follows:   not defined
+vstart:               FFE00
+valign:    not defined
+vfollows:  not defined
+
+---- Section .restart ---------------------------------------------------------
+
+class:     progbits
+length:                  10
+start:                FFFF0
+align:     not defined
+follows:   not defined
+vstart:               FFFF0
+valign:    not defined
+vfollows:  not defined
+
+-- Symbols --------------------------------------------------------------------
+
+---- No Section ---------------------------------------------------------------
+
+Value     Name
+0000FFFE  RELREG_REG
+000000FF  RELREG_DEF
+0000FFA0  UMCS_REG
+0000FFA2  LMCS_REG
+0000FFA4  PACS_REG
+0000FFA6  MMCS_REG
+0000FFA8  MPCS_REG
+0000C03F  UMCS_256K_W3
+00001FFF  LMCS_128K_W3
+0000003F  PACS_0x00000_W3
+000021FF  MMCS_DEF
+0000C0BF  MPCS_DEF
+0000FF52  TIMER0_MAXCNTA
+0000FF56  TIMER0_CON
+0000FF5A  TIMER1_MAXCNTA
+0000FF5E  TIMER1_CON
+00001FFF  LMCS_STACK
+00000000  I8251_D
+00000002  I8251_C
+0000004D  I8251_8n1_1x
+0000004E  I8251_8n1_16x
+0000000D  BAUD_9600_16x
+
+
+---- Section .text ------------------------------------------------------------
+
+Real              Virtual           Name
+           C0000             C0000  _mon
+
+---- Section .data ------------------------------------------------------------
+
+Real              Virtual           Name
+           FFC00             FFC00  UMCS
+           FFC02             FFC02  LMCS
+           FFC04             FFC04  PACS
+           FFC06             FFC06  MMCS
+           FFC08             FFC08  MPCS
+
+---- Section .setup -----------------------------------------------------------
+
+Real              Virtual           Name
+           FFE00             FFE00  _setup
+           FFE27             FFE27  _soc_failure
+           FFE30             FFE30  _soc_passed
+           FFE37             FFE37  _set_mem
+           FFE53             FFE53  _set_pcs
+           FFE63             FFE63  _set_sp
+           FFE6B             FFE6B  _init_serial
+           FFE8B             FFE8B  _test_serial
+           FFE91             FFE91  _test_serial.wait_ready
+           FFEA0             FFEA0  _send_serial
+           FFEA6             FFEA6  _send_serial.wait_ready
+           FFEB3             FFEB3  _finish
+
+---- Section .restart ---------------------------------------------------------
+
+Real              Virtual           Name
+           FFFF0             FFFF0  _restart
+
