@@ -1,6 +1,6 @@
 CPU 186
 USE16
-GLOBAL _restart
+GLOBAL _restart, _putch, _version
 
 %ifndef NOMAP
 [map all reset.map]
@@ -11,6 +11,7 @@ GLOBAL _restart
 
 ; uncomment for the full ram image
 ;	org 0x0
+
 
 segment .text		start=0xc0000	align=256
 ; 256k flash monitor stub
@@ -25,6 +26,7 @@ LMCS:	dw LMCS_128K_W3
 PACS:	dw PACS_0x00000_W3
 MMCS:	dw 0x0000 	; not handled yet
 MPCS:	dw MPCS_DEF
+
 
 segment .setup		start=0xffe00	progbits
 ; main setup code
@@ -94,20 +96,37 @@ _init_serial:
 	nop
 	nop
 
-
 _test_serial:
-	_serial_put_ch 0xaa
+		_serial_put_ch 0x10
 
-        mov cx,0xff
-_send_serial:
-	_serial_put_ch cx
-        loop _send_serial
+		mov bx,_version
+.loop
+		mov	ax,[ds:bx]
+		jz	.end
+		mov	cx,ax
+		call	0xf000:_putch
+		inc	bx
+		jmp	.loop
+.end
+		mov	cx, 0x10
+		call	0xf000:_putch
 
 _finish:
 	say_what 0x7331
 
-	jmp _test_serial
-	;jmp 0xc000:_mon
+	jmp 0xc000:_mon
+
+
+;; BIOS functions
+_putch:
+		push	ax
+		push	dx
+
+		_serial_put_ch cx
+
+		pop	dx
+		pop	ax	
+		retf
 
 
 segment .restart	start=0xffff0	progbits
@@ -118,6 +137,6 @@ segment .restart	start=0xffff0	progbits
 _restart:	cli
 		jmp	0xffe0:0
 	
+segment .version
 ; padding and version
-		db	0x0,0x0
-		db	" V0.0.11"
+_version:	db	"V0.0.12",0x0

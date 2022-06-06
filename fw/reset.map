@@ -13,8 +13,9 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
            FFC00             FFC00             FFC0A  0000000A  progbits  .data
-           FFE00             FFE00             FFEBC  000000BC  progbits  .setup
-           FFFF0             FFFF0            100000  00000010  progbits  .restart
+           FFE00             FFE00             FFED9  000000D9  progbits  .setup
+           FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
+           FFFF8             FFFF8            100000  00000008  progbits  .version
 
 -- Sections (detailed) --------------------------------------------------------
 
@@ -43,7 +44,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                  BC
+length:                  D9
 start:                FFE00
 align:     not defined
 follows:   not defined
@@ -54,11 +55,22 @@ vfollows:  not defined
 ---- Section .restart ---------------------------------------------------------
 
 class:     progbits
-length:                  10
+length:                   6
 start:                FFFF0
 align:     not defined
 follows:   not defined
 vstart:               FFFF0
+valign:    not defined
+vfollows:  not defined
+
+---- Section .version ---------------------------------------------------------
+
+class:     progbits
+length:                   8
+start:                FFFF8
+align:                    4
+follows:   not defined
+vstart:               FFFF8
 valign:    not defined
 vfollows:  not defined
 
@@ -117,12 +129,19 @@ Real              Virtual           Name
            FFE6B             FFE6B  _init_serial
            FFE8B             FFE8B  _test_serial
            FFE91             FFE91  _test_serial.wait_ready
-           FFEA0             FFEA0  _send_serial
-           FFEA6             FFEA6  _send_serial.wait_ready
-           FFEB3             FFEB3  _finish
+           FFEA0             FFEA0  _test_serial.loop
+           FFEAF             FFEAF  _test_serial.end
+           FFEB7             FFEB7  _finish
+           FFEC3             FFEC3  _putch
+           FFECB             FFECB  _putch.wait_ready
 
 ---- Section .restart ---------------------------------------------------------
 
 Real              Virtual           Name
            FFFF0             FFFF0  _restart
+
+---- Section .version ---------------------------------------------------------
+
+Real              Virtual           Name
+           FFFF8             FFFF8  _version
 

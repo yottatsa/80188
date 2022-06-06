@@ -1,6 +1,6 @@
 # 80188 single board modular computer
 
-v.0.0.11
+v.0.0.12
 
 ## References
 * [Tandy 2000 BIOS](https://www.retrotronics.org/svn/t2kbios/)

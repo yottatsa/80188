@@ -45,7 +45,7 @@ BAUD_9600_16x	equ	13
 
 %macro	_serial_put_ch 1
 ;; blocking putch into serial
-;; destroys AX, BX, DX
+;; destroys AX, DX
 		mov	dx, I8251_C
 		mov	al, 0x33	; transmit, RTS, ER, DTR??
 		out	dx, al
