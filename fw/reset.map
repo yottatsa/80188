@@ -13,7 +13,7 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
            FFC00             FFC00             FFC0A  0000000A  progbits  .data
-           FFD00             FFD00             FFDEF  000000EF  progbits  .setup
+           FFD00             FFD00             FFDF2  000000F2  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -44,7 +44,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                  EF
+length:                  F2
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -101,6 +101,7 @@ Value     Name
 0000004E  I8251_8n1_16x
 0000007E  I8251_8e1_16x
 0000000D  BAUD_9600_16x
+0000001A  BAUD_4800_16x
 
 
 ---- Section .text ------------------------------------------------------------
@@ -125,13 +126,13 @@ Real              Virtual           Name
            FFD30             FFD30  _soc_passed
            FFD37             FFD37  _set_mem
            FFD53             FFD53  _set_pcs
-           FFD63             FFD63  _set_sp
-           FFD6B             FFD6B  _init_serial
-           FFD8E             FFD8E  _init_serial.loop
-           FFD94             FFD94  _init_serial.wait_ready
-           FFDA1             FFDA1  _test_serial
-           FFDA4             FFDA4  _test_serial.loop
-           FFDB3             FFDB3  _test_serial.end
+           FFD63             FFD63  _init_serial
+           FFD86             FFD86  _init_serial.loop
+           FFD8C             FFD8C  _init_serial.wait_ready
+           FFD99             FFD99  _set_sp
+           FFDA1             FFDA1  _test_sp
+           FFDA4             FFDA4  _test_sp.loop
+           FFDB3             FFDB3  _test_sp.end
            FFDC0             FFDC0  _finish
            FFDC5             FFDC5  _putch
            FFDCD             FFDCD  _putch.wait_ready

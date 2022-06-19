@@ -6,6 +6,7 @@ I8251_8n1_16x	equ	0x4e		; 01 00 11 10
 I8251_8e1_16x	equ	0x7e		; 01 11 11 10
 
 BAUD_9600_16x	equ	13
+BAUD_4800_16x	equ	26
 
 %macro  say_what 1
 ;; destroys AX, DX

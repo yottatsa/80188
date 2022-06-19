@@ -86,13 +86,8 @@ _set_pcs:
 	mov ax,[ds:MPCS]
 	out dx,ax
 
-_set_sp:
-	mov ax, 0x0
-	mov ss, ax
-	mov sp, LMCS_STACK
-
 _init_serial:
-		_baud_timer	BAUD_9600_16x
+		_baud_timer	BAUD_4800_16x
 		_serial_init	I8251_8n1_16x
 		nop
 		nop
@@ -101,7 +96,13 @@ _init_serial:
 	       _serial_put_ch	cx
 		loop		.loop
 
-_test_serial:
+_set_sp:
+	mov ax, 0x0
+	mov ss, ax
+	mov sp, LMCS_STACK
+
+_test_sp:
+; should print FW version
 		mov bx,_version
 .loop:
 		mov	ax,[ds:bx]
@@ -140,6 +141,8 @@ _getch:
 .wait_ready:	in	al, dx
 		and	al, 0x02	; RXRDY
 		jz	.wait_ready
+		mov	al, 0x10	; Reset Error Flag
+		out	dx, al
 
 		mov	dx,I8251_D
 		in	al, dx
