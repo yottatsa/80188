@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP SC16C752BIB48,157
+D UART Interface IC 2CH. UART 64B FIFO
+K
+F http://www.nxp.com/docs/en/data-sheet/SC16C752B.pdf
+$ENDCMP
+#
+#End Doc Library

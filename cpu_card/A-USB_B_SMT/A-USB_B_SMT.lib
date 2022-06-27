@@ -1,0 +1,28 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model A-USB_B_SMT
+#/274828/601420/2.49/6/4/Connector
+DEF A-USB_B_SMT J 0 30 Y Y 1 F N
+F0 "J" 650 300 50 H V L CNN
+F1 "A-USB_B_SMT" 650 200 50 H V L CNN
+F2 "AUSBBSMT" 650 100 50 H I L CNN
+F3 "http://uk.rs-online.com/web/p/products/6741331P" 650 0 50 H I L CNN
+F4 "ASSMANN WSW 1 Port Right Angle Surface Mount Mount Female Type B USB Connector, 30 V, 1A" 650 -100 50 H I L CNN "Description"
+F5 "10.7" 650 -200 50 H I L CNN "Height"
+F6 "6741331P" 650 -300 50 H I L CNN "RS Part Number"
+F7 "http://uk.rs-online.com/web/p/products/6741331P" 650 -400 50 H I L CNN "RS Price/Stock"
+F8 "ASSMANN WSW components GmbH" 650 -500 50 H I L CNN "Manufacturer_Name"
+F9 "A-USB B/SMT" 650 -600 50 H I L CNN "Manufacturer_Part_Number"
+F10 "R1074095" 650 -700 50 H I L CNN "Allied_Number"
+DRAW
+X 1 1 800 -300 200 L 50 50 0 0 P
+X 2 2 800 -100 200 L 50 50 0 0 P
+X 3 3 800 0 200 L 50 50 0 0 P
+X 4 4 800 -200 200 L 50 50 0 0 P
+X 5 5 0 0 200 R 50 50 0 0 P
+X 6 6 0 -100 200 R 50 50 0 0 P
+P 5 0 1 6 200 100 600 100 600 -400 200 -400 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library

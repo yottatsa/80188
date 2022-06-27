@@ -15,11 +15,6 @@
   - 5V 9pin connector on port B
 * AT-compatible RTC
 
-## References
-* [Tandy 2000 BIOS](https://www.retrotronics.org/svn/t2kbios/)
-* AMD 80C186/80C188 Preliminary
-* Intel 80C186EA/80C188EA Microprocessor User's Manual
-
 ## Notes
 
 ### r1

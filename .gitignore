@@ -3,6 +3,8 @@ fp-info-cache
 *.swp
 *.bak
 
+*-backups
+
 fw/*.d
 fw/*.gen
 fw/*.o
@@ -13,3 +15,13 @@ fw/monitor
 gal/*.chp
 gal/*.fus
 gal/*.pin
+
+?auto_saved_files?
+_autosave*
+* copy.*
+*.zip
+*.dsn
+*.ses
+
+cpu_card/*.stp
+cpu_card/*.step

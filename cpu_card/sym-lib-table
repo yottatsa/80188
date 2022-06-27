@@ -1,0 +1,12 @@
+(sym_lib_table
+  (lib (name "SN74ABT16841DL")(type "Legacy")(uri "${KIPRJMOD}/SN74ABT16841DL/SN74ABT16841DL.lib")(options "")(descr ""))
+  (lib (name "8251A")(type "Legacy")(uri "${KIPRJMOD}/8251A/8251A.lib")(options "")(descr ""))
+  (lib (name "61729-0010BLF")(type "Legacy")(uri "${KIPRJMOD}/61729-0010BLF/61729-0010BLF.lib")(options "")(descr ""))
+  (lib (name "MAX241CWI+")(type "Legacy")(uri "${KIPRJMOD}/MAX241CWI/MAX241CWI+.lib")(options "")(descr ""))
+  (lib (name "PC16550DV_NOPB")(type "Legacy")(uri "${KIPRJMOD}/PC16550DV_NOPB/PC16550DV_NOPB.lib")(options "")(descr ""))
+  (lib (name "A-USB_B_SMT")(type "Legacy")(uri "${KIPRJMOD}/A-USB_B_SMT/A-USB_B_SMT.lib")(options "")(descr ""))
+  (lib (name "16C550")(type "KiCad")(uri "${KIPRJMOD}/PC16550DV_NOPB/16C550.kicad_sym")(options "")(descr ""))
+  (lib (name "DS12885T")(type "Legacy")(uri "${KIPRJMOD}/DS12885T/DS12885T.lib")(options "")(descr ""))
+  (lib (name "SC16C752BIB48_157")(type "Legacy")(uri "${KIPRJMOD}/SC16C752BIB48_157/SC16C752BIB48_157.lib")(options "")(descr ""))
+  (lib (name "diode")(type "KiCad")(uri "${KIPRJMOD}/diode.kicad_sym")(options "")(descr ""))
+)
