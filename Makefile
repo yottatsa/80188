@@ -2,4 +2,8 @@ all:
 	make -C fw
 	make -C gal
 
-.PHONY: all
+clean:
+	make -C fw clean
+	make -C gal clean
+
+.PHONY: all clean

@@ -1,12 +1,9 @@
-LMCS_STACK	equ	0x1fff
-
-I8251_D		equ	0x0000
-I8251_C		equ	0x0002
+I8251_D		equ	0x0180
+I8251_C		equ	0x0182
 I8251_8n1_16x	equ	0x4e		; 01 00 11 10
 I8251_8e1_16x	equ	0x7e		; 01 11 11 10
 
-BAUD_9600_16x	equ	13
-BAUD_4800_16x	equ	26
+BAUD_76800	equ	26
 
 %macro  say_what 1
 ;; destroys AX, DX

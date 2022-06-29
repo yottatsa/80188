@@ -12,8 +12,8 @@ Output file:  reset
 
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
-           FFC00             FFC00             FFC0A  0000000A  progbits  .data
-           FFD00             FFD00             FFDF2  000000F2  progbits  .setup
+           FFC00             FFC00             FFC0C  0000000C  progbits  .data
+           FFD00             FFD00             FFE23  00000123  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -33,7 +33,7 @@ vfollows:  not defined
 ---- Section .data ------------------------------------------------------------
 
 class:     progbits
-length:                   A
+length:                   C
 start:                FFC00
 align:                  100
 follows:   not defined
@@ -44,7 +44,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                  F2
+length:                 123
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -95,13 +95,11 @@ Value     Name
 0000FF56  TIMER0_CON
 0000FF5A  TIMER1_MAXCNTA
 0000FF5E  TIMER1_CON
-00001FFF  LMCS_STACK
-00000000  I8251_D
-00000002  I8251_C
+00000180  I8251_D
+00000182  I8251_C
 0000004E  I8251_8n1_16x
 0000007E  I8251_8e1_16x
-0000000D  BAUD_9600_16x
-0000001A  BAUD_4800_16x
+0000001A  BAUD_76800
 
 
 ---- Section .text ------------------------------------------------------------
@@ -117,6 +115,7 @@ Real              Virtual           Name
            FFC04             FFC04  PACS
            FFC06             FFC06  MMCS
            FFC08             FFC08  MPCS
+           FFC0A             FFC0A  MAXRAM
 
 ---- Section .setup -----------------------------------------------------------
 
@@ -125,19 +124,23 @@ Real              Virtual           Name
            FFD27             FFD27  _soc_failure
            FFD30             FFD30  _soc_passed
            FFD37             FFD37  _set_mem
-           FFD53             FFD53  _set_pcs
-           FFD63             FFD63  _init_serial
-           FFD86             FFD86  _init_serial.loop
-           FFD8C             FFD8C  _init_serial.wait_ready
-           FFD99             FFD99  _set_sp
-           FFDA1             FFDA1  _test_sp
-           FFDA4             FFDA4  _test_sp.loop
-           FFDB3             FFDB3  _test_sp.end
-           FFDC0             FFDC0  _finish
-           FFDC5             FFDC5  _putch
-           FFDCD             FFDCD  _putch.wait_ready
-           FFDDB             FFDDB  _getch
-           FFDE2             FFDE2  _getch.wait_ready
+           FFD4C             FFD4C  _set_pcs
+           FFD5C             FFD5C  _test_ram
+           FFD64             FFD64  _test_ram.loop
+           FFD75             FFD75  _test_ram.ram_failure
+           FFD7E             FFD7E  _test_ram.end
+           FFD7E             FFD7E  _set_sp
+           FFD9C             FFD9C  _init_serial
+           FFDBF             FFDBF  _init_serial.loop
+           FFDC5             FFDC5  _init_serial.wait_ready
+           FFDD2             FFDD2  _print_version
+           FFDD5             FFDD5  _print_version.loop
+           FFDE4             FFDE4  _print_version.end
+           FFDF1             FFDF1  _finish
+           FFDF6             FFDF6  _putch
+           FFDFE             FFDFE  _putch.wait_ready
+           FFE0C             FFE0C  _getch
+           FFE13             FFE13  _getch.wait_ready
 
 ---- Section .restart ---------------------------------------------------------
 

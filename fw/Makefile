@@ -18,7 +18,7 @@ reset.sym: reset
 	nasm $< -o $@
 
 clean:
-	rm -f fw.bin $(sources:.S=.d) $(sources:.S=)
+	rm -f fw.bin $(sources:.S=.d) $(sources:.S=) reset.o reset.glob reset.map
 
 # deps
 %.d: %.S

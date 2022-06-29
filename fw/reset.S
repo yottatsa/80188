@@ -1,7 +1,8 @@
 CPU 186
 USE16
-GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, _restart, _putch, _getch, _version
 
+; for map generation only
+GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _getch, _version
 %ifndef NOMAP
 [map all reset.map]
 %endif
@@ -10,7 +11,7 @@ GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, _restart, _putch, _getch, _version
 %include "platform.inc"
 
 ; uncomment for the full ram image
-;	org 0x0
+;		org	0x0
 
 
 segment .text		start=0xc0000	align=256
@@ -22,73 +23,108 @@ _mon:
 segment .data		start=0xffc00	align=256
 ; platform constants in ROM space
 ; useful to read/change parameters
-UMCS:	dw UMCS_256K_W3
-LMCS:	dw LMCS_128K_W3
-PACS:	dw PACS_0x00000_W3
-MMCS:	dw 0x0000 	; not handled yet
-MPCS:	dw MPCS_DEF
-
+UMCS:		dw	UMCS_256K_W3
+LMCS:		dw	LMCS_128K_W3
+PACS:		dw	PACS_0x00000_W3
+MMCS:		dw	0x0000 	; not handled yet
+MPCS:		dw	MPCS_DEF
+MAXRAM:		dw	0x80	; in KB
 
 segment .setup		start=0xffd00	progbits
 ; main setup code
 
 _setup:
-	;; entry point
-	say_what 0xb007
+		;; entry point
+		say_what 0xb007
 
-	
-	;; proper init
-	
-	;; Ensure relocation register upper bits clear
+		
+		;; proper init
+		
+		;; Ensure relocation register upper bits clear
 
-	mov    ax, RELREG_DEF
-	mov    dx, RELREG_REG
-	out    dx, ax
-	
-	say_what 0xb105
+		mov    ax, RELREG_DEF
+		mov    dx, RELREG_REG
+		out    dx, ax
+		
+		say_what 0xb105
 
-	;; Readback relocation register as a sanity test
+		;; Readback relocation register as a sanity test
 
-	mov    ax, 00ffh
-	mov    bx, ax
-	not    ax
-	mov    dx, RELREG_REG
-	in     ax, dx
-	xor    ax, bx
-	and    ax, 0dfffh
-	jz     _soc_passed
+		mov    ax, 00ffh
+		mov    bx, ax
+		not    ax
+		mov    dx, RELREG_REG
+		in     ax, dx
+		xor    ax, bx
+		and    ax, 0dfffh
+		jz     _soc_passed
 
 _soc_failure:
-    say_what 0xdead
-	jmp    _soc_failure
+		say_what 0xdead
+		jmp    _soc_failure
 
 _soc_passed:
-	;; okay, time to set up memory
-	say_what 0xc0de
+		;; okay, time to set up memory
+		say_what 0xc0de
 
 _set_mem:	
-	mov ax,0xf000
-	mov ds,ax
-	mov dx,UMCS_REG
-	mov ax,[ds:UMCS]
-	out dx,ax
-	mov dx,LMCS_REG
-	mov ax,[ds:LMCS]
-	out dx,ax
-
-	say_what 0x1337
+		mov	ax,0xf000
+		mov	ds,ax
+		mov	dx,UMCS_REG
+		mov	ax,[ds:UMCS]
+		out	dx,ax
+		mov	dx,LMCS_REG
+		mov	ax,[ds:LMCS]
+		out	dx,ax
 
 _set_pcs:
-	mov dx,PACS_REG
-	mov ax,[ds:PACS]
-	out dx,ax
-	mov dx,MPCS_REG
-	mov ax,[ds:MPCS]
-	out dx,ax
+		mov	dx,PACS_REG
+		mov	ax,[ds:PACS]
+		out	dx,ax
+		mov	dx,MPCS_REG
+		mov	ax,[ds:MPCS]
+		out	dx,ax
+
+_test_ram:
+		;; first 255 bytes
+		mov	cx, 0xff
+		mov	ax, 0x0
+		mov	es, ax
+.loop:
+		mov	si, cx
+		mov	[es:si],cl
+		nop
+		mov	al,[es:si]
+		cmp	al, cl
+		jne	.ram_failure
+		loop	.loop
+		jmp	.end
+
+.ram_failure:
+		say_what 0x0bad
+		jmp	.ram_failure	
+.end:
+
+_set_sp:
+		;; ss = (((0x80 - 1) >> 6) << 12)
+		;; sp = (0x80 << 10) - 1
+		mov	ax, [ds:MAXRAM]
+		dec	ax
+		shr	ax, 6
+		shl	ax, 12
+		mov	ss, ax
+		
+		mov	ax, [ds:MAXRAM]
+		shl	ax, 10
+		dec	ax
+		mov	sp, ax
+
+		say_what 0x1337
 
 _init_serial:
-		_baud_timer	BAUD_4800_16x
-		_serial_init	I8251_8n1_16x
+		_baud_timer	BAUD_76800	; serial card uses 4x divider
+		_serial_init	I8251_8n1_16x	; 16x divider
+						; result 1200
 		nop
 		nop
 		mov		cx, 0x01ff
@@ -96,13 +132,9 @@ _init_serial:
 	       _serial_put_ch	cx
 		loop		.loop
 
-_set_sp:
-	mov ax, 0x0
-	mov ss, ax
-	mov sp, LMCS_STACK
 
-_test_sp:
-; should print FW version
+_print_version:
+		;; should print FW version
 		mov bx,_version
 .loop:
 		mov	ax,[ds:bx]
@@ -120,7 +152,7 @@ _finish:
 		jmp	0xc000:_mon
 
 
-;; BIOS functions
+; BIOS functions
 _putch:
 		push	ax
 		push	dx
@@ -163,4 +195,4 @@ _restart:
 	
 segment .version
 ; padding and version
-_version:	db	"V0.0.13",0x0
+_version:	db	"V0.0.14",0x0

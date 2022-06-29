@@ -4,7 +4,8 @@ LMCS equ 0xFFC02
 PACS equ 0xFFC04
 MMCS equ 0xFFC06
 MPCS equ 0xFFC08
-_putch equ 0xFFDC5
-_getch equ 0xFFDDB
+MAXRAM equ 0xFFC0A
+_putch equ 0xFFDF6
+_getch equ 0xFFE0C
 _restart equ 0xFFFF0
 _version equ 0xFFFF8
