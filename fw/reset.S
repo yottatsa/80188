@@ -23,6 +23,7 @@ _mon:
 segment .data		start=0xffc00	align=256
 ; platform constants in ROM space
 ; useful to read/change parameters
+SETUPSUM16:	dw	0x0000
 UMCS:		dw	UMCS_256K_W3
 LMCS:		dw	LMCS_128K_W3
 PACS:		dw	PACS_0x00000_W3
@@ -85,71 +86,151 @@ _set_pcs:
 		mov	ax,[ds:MPCS]
 		out	dx,ax
 
-_test_ram:
+;_set_sp:
+;		;; ss = (((0x80 - 1) >> 6) << 12)
+;		;; sp = (0x80 << 10) - 1
+;		mov	ax, [ds:MAXRAM]
+;		dec	ax
+;		shr	ax, 6
+;		shl	ax, 12
+;		mov	ss, ax
+;		
+;		mov	ax, [ds:MAXRAM]
+;		shl	ax, 10
+;		dec	ax
+;		mov	sp, ax
+;
+;		say_what 0x1337
+
+_init_serial:
+		_baud_timer	BAUD_76800	; serial card uses 4x divider
+		_serial_init	(UART_1STOP | UART_NO_PARITY | UART_8BITS | UART_X16), (UART_ER | UART_TXE)
+						; result 1200
+		mov		cx, 0xff
+.loop:
+	       _serial_putch	cx
+		loop		.loop
+
+_print_version:
+		_serial_putch	0x0a
+		_serial_puts	_version
+		_serial_putch	0x0a
+
+_test_setup_rom:
+		_serial_puts	.msg
+		mov	si, 0xfd00
+		mov	bx, 0x0
+		mov	cx, 384
+.loop:
+		add	bx, [ds:si]
+		inc	si
+		inc	si
+		loop	.loop
+.check:
+		mov	ax,[ds:SETUPSUM16]
+		cmp	ax, bx
+		jne	.rom_failure
+
+.rom_failure:
+		_serial_puts	_bad
+.halt:
+		say_what 0x0bad
+		jmp	.halt
+.msg:		db	"CHECKSUM ",0x0
+.end:
+		_serial_puts	_ok
+
+;_test_ram_bytes:
+;		_serial_puts	.msg
+;		;; first 255 bytes
+;		mov	cx, 0xff
+;		mov	ax, 0x0
+;		mov	es, ax
+;.loop:
+;		mov	si, cx
+;		mov	[es:si],cl
+;		_serial_putch	cx
+;		mov	al,[es:si]
+;		cmp	al, cl
+;		jne	.ram_failure
+;		loop	.loop
+;		jmp	.end
+;
+;.ram_failure:
+;		_serial_puts	_bad
+;.halt:
+;		say_what 0x1bad
+;		jmp	.halt
+;.msg:		db	"BYTES ",0x0
+;.end:
+;		_serial_puts	_ok
+
+_test_ram_words:
+		_serial_puts	.msg
 		;; first 255 bytes
-		mov	cx, 0xff
+		mov	cx, 0x00ff
 		mov	ax, 0x0
 		mov	es, ax
 .loop:
 		mov	si, cx
-		mov	[es:si],cl
-		nop
-		mov	al,[es:si]
-		cmp	al, cl
+		mov	[es:si],cx
+		_serial_putch	cx
+		mov	ax,[es:si]
+		cmp	ax, cx
 		jne	.ram_failure
 		loop	.loop
 		jmp	.end
 
 .ram_failure:
-		say_what 0x0bad
-		jmp	.ram_failure	
+		_serial_puts	_bad
+.halt:
+		say_what 0x2bad
+		jmp	.halt
+.msg:		db	"WORDS ",0x0
 .end:
+		_serial_puts	_ok
 
-_set_sp:
-		;; ss = (((0x80 - 1) >> 6) << 12)
-		;; sp = (0x80 << 10) - 1
-		mov	ax, [ds:MAXRAM]
-		dec	ax
-		shr	ax, 6
-		shl	ax, 12
-		mov	ss, ax
-		
-		mov	ax, [ds:MAXRAM]
-		shl	ax, 10
-		dec	ax
-		mov	sp, ax
+;print_ram_2:
+;		;; first 255 bytes
+;		mov	cx, 0xff
+;.loop:
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		mov	si, cx
+;		mov	bx,[es:si]
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;	        _serial_putch	bx
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		nop
+;		loop	.loop
+;		jmp	.end
+;
+;.end:
 
-		say_what 0x1337
 
-_init_serial:
-		_baud_timer	BAUD_76800	; serial card uses 4x divider
-		_serial_init	I8251_8n1_16x	; 16x divider
-						; result 1200
-		nop
-		nop
-		mov		cx, 0x01ff
-.loop:
-	       _serial_put_ch	cx
-		loop		.loop
-
-
-_print_version:
-		;; should print FW version
-		mov bx,_version
-.loop:
-		mov	ax,[ds:bx]
-		jz	.end
-		mov	cx,ax
-		call	0xf000:_putch
-		inc	bx
-		jmp	.loop
-.end:
-		mov	cx, 0x1313
-		call	0xf000:_putch
-		call	0xf000:_putch
 
 _finish:
 		jmp	0xc000:_mon
+
+_ok:		db	"OK",0x0a,0x0
+_bad:		db	"failed",0x0a,0x0
 
 
 ; BIOS functions
@@ -157,7 +238,7 @@ _putch:
 		push	ax
 		push	dx
 
-		_serial_put_ch cx
+		_serial_putch cx
 
 		pop	dx
 		pop	ax	
@@ -195,4 +276,4 @@ _restart:
 	
 segment .version
 ; padding and version
-_version:	db	"V0.0.14",0x0
+_version:	db	"V0.0.15",0x0

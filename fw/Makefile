@@ -4,6 +4,7 @@ sources = reset.S monitor.S
 fw.bin: $(sources:.S=) 
 	dd if=reset of=$@.gen bs=1024 skip=255 seek=255 status=none
 	dd if=monitor of=$@.gen bs=1024 conv=notrunc status=none
+	python checksum.py $@.gen
 	mv $@.gen $@
 
 # exports symbols as constants

@@ -22,3 +22,8 @@ TIMER0_CON	equ	0xff56
 
 TIMER1_MAXCNTA	equ	0xff5a
 TIMER1_CON	equ	0xff5e
+
+PCS0		equ	0x0
+PCS1		equ	0x80
+PCS2		equ	0x100
+PCS3		equ	0x0180
