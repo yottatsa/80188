@@ -1,4 +1,4 @@
-sources = cpu_card_16v8.pld
+sources = cpu_card_16v8.pld cpu_card_22v10.pld
 
 all: $(sources:.pld=.jed)
 

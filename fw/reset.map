@@ -13,7 +13,7 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFF75  00000275  progbits  .setup
+           FFD00             FFD00             FFDFB  000000FB  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -44,7 +44,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 275
+length:                  FB
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -99,47 +99,31 @@ Value     Name
 00000080  PCS1
 00000100  PCS2
 00000180  PCS3
-00000180  UART_BASE
-00000180  UART_DATA
-00000182  UART_CMD
-000000C0  UART_STOP_MASK
-000000C0  UART_2STOP
-00000080  UART_15STOP
-00000040  UART_1STOP
-00000000  UART_0STOP
-00000030  UART_PARITY_MASK
-00000020  UART_EVEN_PARITY
-00000010  UART_ODD_PARITY
+00000000  UART_BASE
+00000000  UART_THR
+00000000  UART_RBR
+00000000  UART_DLL
+00000001  UART_IER
+00000001  UART_DLH
+00000002  UART_IIR
+00000002  UART_FCR
+00000003  UART_LCR
+00000004  UART_MCR
+00000005  UART_LSR
+00000006  UART_MSR
+00000002  UART_EFR
+00000080  UART_LCR_DLAB
+00000001  UART_FCR_FIFOENABLE
+00000020  UART_LSR_THREMPTY
+00000004  UART_2STOP
+00000004  UART_15STOP
+00000000  UART_1STOP
 00000000  UART_NO_PARITY
-0000000C  UART_BITS_MASK
-0000000C  UART_8BITS
-00000008  UART_7BITS
-00000004  UART_6BITS
+00000003  UART_8BITS
+00000002  UART_7BITS
+00000001  UART_6BITS
 00000000  UART_5BITS
-00000003  UART_PRESCALER
-00000003  UART_X64
-00000002  UART_X16
-00000001  UART_X1
-00000000  UART_SYNC_MODE
-00000080  UART_EH
-00000040  UART_IR
-00000020  UART_RTS
-00000010  UART_ER
-00000008  UART_SBRK
-00000004  UART_RXE
-00000002  UART_DTR
-00000001  UART_TXE
-00000080  UART_DSR
-00000040  UART_SYNDET_BD
-00000020  UART_FE
-00000010  UART_OE
-00000008  UART_PE
-00000004  UART_TXEMPTY
-00000002  UART_RXRDY
-00000001  UART_TXRDY
-00000180  I8251_D
-00000182  I8251_C
-0000001A  BAUD_76800
+00000078  BAUD_9600
 
 
 ---- Section .text ------------------------------------------------------------
@@ -166,66 +150,20 @@ Real              Virtual           Name
            FFD30             FFD30  _soc_passed
            FFD37             FFD37  _set_mem
            FFD4C             FFD4C  _set_pcs
-           FFD5C             FFD5C  _init_serial
-           FFD80             FFD80  _init_serial.loop
-           FFD83             FFD83  ..@12.wait_empty
-           FFD91             FFD91  ..@12.wait_ready
-           FFD98             FFD98  _print_version
-           FFD9B             FFD9B  ..@13.wait_empty
-           FFDAA             FFDAA  ..@13.wait_ready
-           FFDB2             FFDB2  ..@14.loop
-           FFDBE             FFDBE  ..@15.wait_empty
-           FFDCC             FFDCC  ..@15.wait_ready
-           FFDD4             FFDD4  ..@14.end
-           FFDD7             FFDD7  ..@16.wait_empty
-           FFDE6             FFDE6  ..@16.wait_ready
-           FFDEB             FFDEB  _test_setup_rom
-           FFDEE             FFDEE  ..@17.loop
-           FFDFA             FFDFA  ..@18.wait_empty
-           FFE08             FFE08  ..@18.wait_ready
-           FFE10             FFE10  ..@17.end
-           FFE19             FFE19  _test_setup_rom.loop
-           FFE20             FFE20  _test_setup_rom.check
-           FFE28             FFE28  _test_setup_rom.rom_failure
-           FFE2B             FFE2B  ..@19.loop
-           FFE37             FFE37  ..@20.wait_empty
-           FFE45             FFE45  ..@20.wait_ready
-           FFE4D             FFE4D  ..@19.end
-           FFE4D             FFE4D  _test_setup_rom.halt
-           FFE56             FFE56  _test_setup_rom.msg
-           FFE60             FFE60  _test_setup_rom.end
-           FFE63             FFE63  ..@22.loop
-           FFE6F             FFE6F  ..@23.wait_empty
-           FFE7D             FFE7D  ..@23.wait_ready
-           FFE85             FFE85  ..@22.end
-           FFE85             FFE85  _test_ram_words
-           FFE88             FFE88  ..@24.loop
-           FFE94             FFE94  ..@25.wait_empty
-           FFEA2             FFEA2  ..@25.wait_ready
-           FFEAA             FFEAA  ..@24.end
-           FFEB2             FFEB2  _test_ram_words.loop
-           FFEBA             FFEBA  ..@26.wait_empty
-           FFEC8             FFEC8  ..@26.wait_ready
-           FFED8             FFED8  _test_ram_words.ram_failure
-           FFEDB             FFEDB  ..@27.loop
-           FFEE7             FFEE7  ..@28.wait_empty
-           FFEF5             FFEF5  ..@28.wait_ready
-           FFEFD             FFEFD  ..@27.end
-           FFEFD             FFEFD  _test_ram_words.halt
-           FFF06             FFF06  _test_ram_words.msg
-           FFF0D             FFF0D  _test_ram_words.end
-           FFF10             FFF10  ..@30.loop
-           FFF1C             FFF1C  ..@31.wait_empty
-           FFF2A             FFF2A  ..@31.wait_ready
-           FFF32             FFF32  ..@30.end
-           FFF32             FFF32  _finish
-           FFF37             FFF37  _ok
-           FFF3B             FFF3B  _bad
-           FFF43             FFF43  _putch
-           FFF48             FFF48  ..@32.wait_empty
-           FFF56             FFF56  ..@32.wait_ready
-           FFF5E             FFF5E  _getch
-           FFF65             FFF65  _getch.wait_ready
+           FFD5C             FFD5C  _test_setup_rom
+           FFD65             FFD65  _test_setup_rom.loop
+           FFD6C             FFD6C  _test_setup_rom.check
+           FFD76             FFD76  _test_setup_rom.rom_failure
+           FFD7F             FFD7F  _test_setup_rom.end
+           FFD8C             FFD8C  _init_serial
+           FFDB0             FFDB0  _init_serial.loop
+           FFDB5             FFDB5  _test_ram_words
+           FFDE4             FFDE4  _test_ram_words.ram_failure
+           FFDE4             FFDE4  _test_ram_words.halt
+           FFDED             FFDED  _test_ram_words.end
+           FFDF6             FFDF6  _finish
+           FFDFB             FFDFB  _putch
+           FFDFB             FFDFB  _getch
 
 ---- Section .restart ---------------------------------------------------------
 

@@ -102,22 +102,8 @@ _set_pcs:
 ;
 ;		say_what 0x1337
 
-_init_serial:
-		_baud_timer	BAUD_76800	; serial card uses 4x divider
-		_serial_init	(UART_1STOP | UART_NO_PARITY | UART_8BITS | UART_X16), (UART_ER | UART_TXE)
-						; result 1200
-		mov		cx, 0xff
-.loop:
-	       _serial_putch	cx
-		loop		.loop
-
-_print_version:
-		_serial_putch	0x0a
-		_serial_puts	_version
-		_serial_putch	0x0a
 
 _test_setup_rom:
-		_serial_puts	.msg
 		mov	si, 0xfd00
 		mov	bx, 0x0
 		mov	cx, 384
@@ -130,15 +116,31 @@ _test_setup_rom:
 		mov	ax,[ds:SETUPSUM16]
 		cmp	ax, bx
 		jne	.rom_failure
-
+		jmp	.end
 .rom_failure:
-		_serial_puts	_bad
-.halt:
 		say_what 0x0bad
-		jmp	.halt
-.msg:		db	"CHECKSUM ",0x0
+		jmp	.rom_failure
 .end:
-		_serial_puts	_ok
+		say_what bx
+		say_what 0x1337
+
+;; went past here
+
+_init_serial:
+		_8250_init	BAUD_9600, UART_8BITS
+		mov		cx, 0x7e
+		mov		dx, UART_THR
+.loop:
+		mov		ax, cx
+		out		dx, al
+		loop		.loop
+
+;_print_version:
+;		_serial_putch	0x0a
+;		_serial_puts	_version
+;		_serial_putch	0x0a
+
+
 
 ;_test_ram_bytes:
 ;		_serial_puts	.msg
@@ -166,29 +168,33 @@ _test_setup_rom:
 ;		_serial_puts	_ok
 
 _test_ram_words:
-		_serial_puts	.msg
+;		_serial_puts	.msg
 		;; first 255 bytes
-		mov	cx, 0x00ff
 		mov	ax, 0x0
 		mov	es, ax
-.loop:
-		mov	si, cx
+		mov	si, 0x1234
+		mov	cx, 0xabcd
+		say_what si
+		say_what cx
 		mov	[es:si],cx
-		_serial_putch	cx
-		mov	ax,[es:si]
-		cmp	ax, cx
+		mov	[es:si],cx
+		mov	bx,0x0
+		mov	bx,[es:si]
+		cmp	bx, cx
+		say_what bx
 		jne	.ram_failure
-		loop	.loop
 		jmp	.end
 
 .ram_failure:
-		_serial_puts	_bad
+;		_serial_puts	_bad
 .halt:
 		say_what 0x2bad
 		jmp	.halt
-.msg:		db	"WORDS ",0x0
+;.msg:		db	"WORDS ",0x0
 .end:
-		_serial_puts	_ok
+		say_what 0xcafe
+		jmp	.end
+;		_serial_puts	_ok
 
 ;print_ram_2:
 ;		;; first 255 bytes
@@ -229,40 +235,42 @@ _test_ram_words:
 _finish:
 		jmp	0xc000:_mon
 
-_ok:		db	"OK",0x0a,0x0
-_bad:		db	"failed",0x0a,0x0
+; text constants
+
+;_ok:		db	"OK",0x0a,0x0
+;_bad:		db	"failed",0x0a,0x0
 
 
 ; BIOS functions
 _putch:
-		push	ax
-		push	dx
-
-		_serial_putch cx
-
-		pop	dx
-		pop	ax	
-		retf
-
+;		push	ax
+;		push	dx
+;
+;		_serial_putch cx
+;
+;		pop	dx
+;		pop	ax	
+;		retf
+;
 _getch:
-		push	dx
-
-		mov	dx, I8251_C
-		mov	al, 0x34	; RTS, Reset Error Flag, RX
-		out	dx, al
-
-.wait_ready:	in	al, dx
-		and	al, 0x02	; RXRDY
-		jz	.wait_ready
-		mov	al, 0x10	; Reset Error Flag
-		out	dx, al
-
-		mov	dx,I8251_D
-		in	al, dx
-
-		xor	ah, ah
-		pop	dx
-		retf
+;		push	dx
+;
+;		mov	dx, I8251_C
+;		mov	al, 0x34	; RTS, Reset Error Flag, RX
+;		out	dx, al
+;
+;.wait_ready:	in	al, dx
+;		and	al, 0x02	; RXRDY
+;		jz	.wait_ready
+;		mov	al, 0x10	; Reset Error Flag
+;		out	dx, al
+;
+;		mov	dx,I8251_D
+;		in	al, dx
+;
+;		xor	ah, ah
+;		pop	dx
+;		retf
 
 
 segment .restart	start=0xffff0	progbits
@@ -276,4 +284,4 @@ _restart:
 	
 segment .version
 ; padding and version
-_version:	db	"V0.0.15",0x0
+_version:	db	"V0.1.0",0x0,0x0
