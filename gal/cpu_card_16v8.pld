@@ -1,22 +1,25 @@
 GAL16V8    ;
-cpu_card_14;
-
-Clock  ALE     S2      WR      RD      RESIN   SERIAL  CARDSEL DEN     GND
-/OE    RESET   IOR     IOW     SMEMR   SMEMW   BEN     MIO     ALEO    VCC
+glue_r01_01;
 
 
-ALEO  = /ALE
+Clock	RESOUT	A3	WR	RD	MIO	SERIAL	CARDSEL	DEN	GND
+/OE	BEN	RESET	SMEMW	SMEMR	IOW	IOR	CSS1	NRESET	VCC
 
-RESET = /RESIN
 
-MIO.R =  S2
+RESET = RESOUT
 
-IOR   = RESET +  MIO + RD + DEN * CARDSEL
+IOR   = RESET +  MIO + RD + DEN + CARDSEL
 IOW   = RESET +  MIO + WR + DEN
-SMEMR = RESET + /MIO + RD + DEN * CARDSEL
-SMEMW = RESET + /MIO + WR + DEN
+SMEMR = RESET + /MIO + RD + DEN + CARDSEL
+SMEMW = RESET + /MIO + WR + DEN 
 
-BEN   = IOR * IOW * SMEMR * SMEMW
+BEN   = IOR * IOW
+
+CSS1  = SERIAL +  A3
+
+NRESET.T = VCC
+NRESET.E = GND
 
 
 DESCRIPTION
+- pins 12, 19 can't be used as input, so the NRESET logic is disabled
