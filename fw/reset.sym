@@ -5,7 +5,7 @@ PACS equ 0xFFC06
 MMCS equ 0xFFC08
 MPCS equ 0xFFC0A
 MAXRAM equ 0xFFC0C
-_putch equ 0xFFDFB
-_getch equ 0xFFDFB
+_putch equ 0xFFE32
+_getch equ 0xFFE32
 _restart equ 0xFFFF0
 _version equ 0xFFFF8

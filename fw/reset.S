@@ -7,6 +7,16 @@ GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _getch, _version
 [map all reset.map]
 %endif
 
+
+; debug output
+%macro  say_what 1
+;; destroys AX, DX
+		mov	dx, 0x220
+		mov	ax, %1
+		out	dx, ax
+%endmacro
+
+
 %include "amd80c188.inc"
 %include "platform.inc"
 
@@ -18,18 +28,18 @@ segment .text		start=0xc0000	align=256
 ; 256k flash monitor stub
 _mon:
 		jmp	_mon
-		
+
 
 segment .data		start=0xffc00	align=256
 ; platform constants in ROM space
 ; useful to read/change parameters
-SETUPSUM16:	dw	0x0000
+SETUPSUM16:	dw	0x0000		; updated during build	
 UMCS:		dw	UMCS_256K_W3
 LMCS:		dw	LMCS_128K_W3
 PACS:		dw	PACS_0x00000_W3
-MMCS:		dw	0x0000 	; not handled yet
+MMCS:		dw	0x0000 		; not handled yet
 MPCS:		dw	MPCS_DEF
-MAXRAM:		dw	0x80	; in KB
+MAXRAM:		dw	0x80		; in KB
 
 segment .setup		start=0xffd00	progbits
 ; main setup code
@@ -38,15 +48,15 @@ _setup:
 		;; entry point
 		say_what 0xb007
 
-		
+
 		;; proper init
-		
+
 		;; Ensure relocation register upper bits clear
 
 		mov    ax, RELREG_DEF
 		mov    dx, RELREG_REG
 		out    dx, ax
-		
+
 		say_what 0xb105
 
 		;; Readback relocation register as a sanity test
@@ -68,7 +78,7 @@ _soc_passed:
 		;; okay, time to set up memory
 		say_what 0xc0de
 
-_set_mem:	
+_set_mem:
 		mov	ax,0xf000
 		mov	ds,ax
 		mov	dx,UMCS_REG
@@ -94,7 +104,7 @@ _set_pcs:
 ;		shr	ax, 6
 ;		shl	ax, 12
 ;		mov	ss, ax
-;		
+;
 ;		mov	ax, [ds:MAXRAM]
 ;		shl	ax, 10
 ;		dec	ax
@@ -124,58 +134,15 @@ _test_setup_rom:
 		say_what bx
 		say_what 0x1337
 
-;; went past here
-
-_init_serial:
-		_8250_init	BAUD_9600, UART_8BITS
-		mov		cx, 0x7e
-		mov		dx, UART_THR
-.loop:
-		mov		ax, cx
-		out		dx, al
-		loop		.loop
-
-;_print_version:
-;		_serial_putch	0x0a
-;		_serial_puts	_version
-;		_serial_putch	0x0a
-
-
-
-;_test_ram_bytes:
-;		_serial_puts	.msg
-;		;; first 255 bytes
-;		mov	cx, 0xff
-;		mov	ax, 0x0
-;		mov	es, ax
-;.loop:
-;		mov	si, cx
-;		mov	[es:si],cl
-;		_serial_putch	cx
-;		mov	al,[es:si]
-;		cmp	al, cl
-;		jne	.ram_failure
-;		loop	.loop
-;		jmp	.end
-;
-;.ram_failure:
-;		_serial_puts	_bad
-;.halt:
-;		say_what 0x1bad
-;		jmp	.halt
-;.msg:		db	"BYTES ",0x0
-;.end:
-;		_serial_puts	_ok
 
 _test_ram_words:
-;		_serial_puts	.msg
-		;; first 255 bytes
 		mov	ax, 0x0
 		mov	es, ax
 		mov	si, 0x1234
 		mov	cx, 0xabcd
 		say_what si
 		say_what cx
+;; went past here
 		mov	[es:si],cx
 		mov	[es:si],cx
 		mov	bx,0x0
@@ -186,58 +153,36 @@ _test_ram_words:
 		jmp	.end
 
 .ram_failure:
-;		_serial_puts	_bad
 .halt:
 		say_what 0x2bad
 		jmp	.halt
-;.msg:		db	"WORDS ",0x0
 .end:
 		say_what 0xcafe
-		jmp	.end
-;		_serial_puts	_ok
-
-;print_ram_2:
-;		;; first 255 bytes
-;		mov	cx, 0xff
-;.loop:
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		mov	si, cx
-;		mov	bx,[es:si]
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;	        _serial_putch	bx
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		nop
-;		loop	.loop
-;		jmp	.end
-;
-;.end:
 
 
+_init_serial:
+		_8250_init	BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
+_print_version:
+		mov		dx, UART_THR
+		mov		bx, _version
+.loop:
+		mov		al,[ds:bx]
+		cmp		al, 0
+		jz		.end
+		out		dx, al
+		inc		bx
+		jmp		.loop
+.end
+		mov		ax, 0x0a
+		out		dx, al
 
 _finish:
+		_serial_puts	_ok
 		jmp	0xc000:_mon
 
 ; text constants
 
-;_ok:		db	"OK",0x0a,0x0
+_ok:		db	"OK",0x0a,0x0
 ;_bad:		db	"failed",0x0a,0x0
 
 
@@ -249,7 +194,7 @@ _putch:
 ;		_serial_putch cx
 ;
 ;		pop	dx
-;		pop	ax	
+;		pop	ax
 ;		retf
 ;
 _getch:
@@ -281,7 +226,7 @@ segment .restart	start=0xffff0	progbits
 _restart:
 		cli
 		jmp	0xffd0:0
-	
+
 segment .version
-; padding and version
-_version:	db	"V0.1.0",0x0,0x0
+; version and padding
+_version:	db	"r0.1v0.2"

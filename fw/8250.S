@@ -12,8 +12,16 @@ UART_MSR	equ	(UART_BASE+6)	; R: Modem Status Register
 UART_EFR	equ	(UART_BASE+2)	; Enhanced Feature Register
 
 UART_LCR_DLAB		equ	(1 << 7)
-UART_FCR_FIFOENABLE	equ	0x1
+UART_LCR_EFR		equ	0xbf	; 16C752 only
+UART_FCR_FIFOENABLE	equ	(1 << 0)
+UART_FCR_RXRESET	equ	(1 << 1)
+UART_FCR_TXRESET	equ	(1 << 2)
+UART_FCR_FIFOSETUP	equ	(UART_FCR_FIFOENABLE | UART_FCR_RXRESET | UART_FCR_TXRESET)
 UART_LSR_THREMPTY	equ	(1 << 5)
+UART_EFR_AUTOCTS	equ	(1 << 7)
+UART_EFR_AUTORTS	equ	(1 << 6)
+UART_EFR_HWHANDSHAKE	equ	(UART_EFR_AUTOCTS | UART_EFR_AUTORTS)
+
 
 ; mode register bits
 UART_2STOP	equ	0x04
@@ -28,8 +36,9 @@ UART_6BITS	equ	0x01
 UART_5BITS	equ	0x00
 
 
-%macro _8250_init 2
-; divisor, (wl, nst, pa, br)
+_8250_init:
+%macro _8250_init 4
+; divisor, UART_EFR_HWHANDSHAKE, (wl, nst, pa, br), UART_FCR_FIFOSETUP
 
 ;; set_baud
 ; enable DLAB
@@ -45,19 +54,34 @@ UART_5BITS	equ	0x00
 		mov	al, ((%1 >> 8) & 0xff)
 		out	dx, al
 
-;; disable DLAB and set LCR
+;; configure EFR (16c752 only)
 		mov	dx, UART_LCR
-		mov	al, %2
+		mov	ax, UART_LCR_EFR
 		out	dx, al
-;; EFR not implemented yet
+
+; Enhanced functions TODO
+;  - MCR[6] registers 
+;  - FIFO control (TCR/TLR, FCR[5:4])
+;  - HW (IER[7:6])
+;  - SW
+
+		mov	dx, UART_EFR
+		mov	ax, %2
+		out	dx, al
+
+;; disable DLAB/EFR and set LCR
+		mov	dx, UART_LCR
+		mov	al, %3
+		out	dx, al
 
 ;; enable FIFO
 		mov	dx, UART_FCR
-		mov	al, UART_FCR_FIFOENABLE
+		mov	al, %4
 		out	dx, al
 %endmacro
 
 
+_serial_putch:
 %macro	_serial_putch 1
 ;; blocking putch into serial
 ;; destroys AX, DX
@@ -71,6 +95,8 @@ UART_5BITS	equ	0x00
 		out	dx, al
 %endmacro
 
+
+_serial_puts:
 %macro	_serial_puts 1
 		mov	bx, %1
 %%loop:
