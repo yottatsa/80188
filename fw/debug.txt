@@ -1,0 +1,37 @@
+_mon:
+_putch:
+_getch:
+_setup:
+		say_what 0xb007		; jumped to the setup code
+		say_what 0xb105
+_soc_failure:
+		say_what 0xdead
+_soc_passed:
+		say_what 0xc0de
+_set_mem:
+_set_pcs:
+_test_setup_rom:
+.loop:
+.check:
+.rom_failure:
+		say_what 0x0bad
+.end:
+		say_what bx		; checksum
+		say_what 0x1337		; rom check passed
+_set_sp:
+		say_what ss		; 0x1000
+		say_what sp		; 0xffff
+_test_ram_words:
+		say_what si		; ram test address
+		say_what cx		; ram test value to write
+		say_what bx		; ram test value readback
+.ram_failure:
+.halt:
+		say_what 0x2bad
+.end:
+		say_what 0xcafe		; memory test passed
+_init_serial:
+_print_version:
+.loop:
+_finish:
+_restart:

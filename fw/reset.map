@@ -11,15 +11,16 @@ Output file:  reset
 -- Sections (summary) ---------------------------------------------------------
 
 Vstart            Start             Stop              Length    Class     Name
-           C0000             C0000             C0002  00000002  progbits  .text
+           C0000             C0000             C0002  00000002  progbits  .stub
+           F0000             F0000             F0016  00000016  progbits  .text
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFE32  00000132  progbits  .setup
+           FFD00             FFD00             FFE53  00000153  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
 -- Sections (detailed) --------------------------------------------------------
 
----- Section .text ------------------------------------------------------------
+---- Section .stub ------------------------------------------------------------
 
 class:     progbits
 length:                   2
@@ -27,6 +28,17 @@ start:                C0000
 align:                  100
 follows:   not defined
 vstart:               C0000
+valign:    not defined
+vfollows:  not defined
+
+---- Section .text ------------------------------------------------------------
+
+class:     progbits
+length:                  16
+start:                F0000
+align:                  100
+follows:   not defined
+vstart:               F0000
 valign:    not defined
 vfollows:  not defined
 
@@ -44,7 +56,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 132
+length:                 153
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -133,13 +145,20 @@ Value     Name
 00000078  BAUD_9600
 
 
+---- Section .stub ------------------------------------------------------------
+
+Real              Virtual           Name
+           C0000             C0000  _mon
+
 ---- Section .text ------------------------------------------------------------
 
 Real              Virtual           Name
-           C0000             C0000  _8250_init
-           C0000             C0000  _serial_putch
-           C0000             C0000  _serial_puts
-           C0000             C0000  _mon
+           F0000             F0000  _8250_init
+           F0000             F0000  _serial_putch
+           F0000             F0000  _serial_puts
+           F0000             F0000  _putch
+           F0005             F0005  ..@5.wait_empty
+           F0013             F0013  _getch
 
 ---- Section .data ------------------------------------------------------------
 
@@ -165,21 +184,20 @@ Real              Virtual           Name
            FFD6C             FFD6C  _test_setup_rom.check
            FFD76             FFD76  _test_setup_rom.rom_failure
            FFD7F             FFD7F  _test_setup_rom.end
-           FFD8C             FFD8C  _test_ram_words
-           FFDBB             FFDBB  _test_ram_words.ram_failure
-           FFDBB             FFDBB  _test_ram_words.halt
-           FFDC4             FFDC4  _test_ram_words.end
-           FFDCB             FFDCB  _init_serial
-           FFDF7             FFDF7  _print_version
-           FFDFD             FFDFD  _print_version.loop
-           FFE08             FFE08  _print_version.end
-           FFE0C             FFE0C  _finish
-           FFE0F             FFE0F  ..@19.loop
-           FFE1B             FFE1B  ..@20.wait_empty
-           FFE29             FFE29  ..@19.end
-           FFE2E             FFE2E  _ok
-           FFE32             FFE32  _putch
-           FFE32             FFE32  _getch
+           FFD8C             FFD8C  _set_sp
+           FFDAF             FFDAF  _test_ram_words
+           FFDDB             FFDDB  _test_ram_words.ram_failure
+           FFDDB             FFDDB  _test_ram_words.halt
+           FFDE4             FFDE4  _test_ram_words.end
+           FFDEB             FFDEB  _init_serial
+           FFE17             FFE17  _print_version
+           FFE1D             FFE1D  _print_version.loop
+           FFE28             FFE28  _print_version.end
+           FFE2C             FFE2C  _finish
+           FFE2F             FFE2F  ..@23.loop
+           FFE3B             FFE3B  ..@24.wait_empty
+           FFE49             FFE49  ..@23.end
+           FFE4F             FFE4F  _ok
 
 ---- Section .restart ---------------------------------------------------------
 

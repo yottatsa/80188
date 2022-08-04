@@ -100,7 +100,7 @@ _serial_puts:
 %macro	_serial_puts 1
 		mov	bx, %1
 %%loop:
-		mov	al,[ds:bx]
+		mov	al, [ds:bx]
 		cmp	al, 0
 		jz	%%end
 		mov	cl, al
