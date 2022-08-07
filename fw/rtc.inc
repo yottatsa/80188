@@ -1,0 +1,7 @@
+RTC_SECONDS	equ	 RTC_BASE
+RTC_MINUTES	equ	(RTC_BASE+2)
+
+RTC_CA		equ	(RTC_BASE+0x0a)
+RTC_CB		equ	(RTC_BASE+0x0b)
+RTC_CC		equ	(RTC_BASE+0x0c)
+RTC_CD		equ	(RTC_BASE+0x0d)

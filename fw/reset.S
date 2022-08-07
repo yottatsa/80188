@@ -156,8 +156,105 @@ _test_ram_words:
 
 _init_serial:
 		_8250_init BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
-		mov	bx, _ok
+		mov	bx, _board_ok
 		call	0xf000:_puts
+
+_check_rtc:
+		mov	dx, RTC_CD
+		in	al, dx
+		mov	bx, 0x80
+		cmp	ax, bx
+		jne	.bad_cmos
+
+		mov	dx, RTC_CB
+		in	al, dx
+		mov	bx, 0x06
+		cmp	ax, bx
+		jne	.bad_cmos
+
+		mov	dx, RTC_CA
+		in	al, dx
+		mov	bx, 0x21
+		cmp	ax, bx
+		jne	.bad_cmos
+
+		mov	dx, RTC_MINUTES
+		in	al, dx
+		mov	bx, ax
+		call	0xf000:_putch
+		mov	bx, ":"
+		call	0xf000:_putch
+		mov	dx, RTC_SECONDS
+		in	al, dx
+		mov	bx, ax
+		call	0xf000:_putch
+		mov	bx, 0x0a
+		call	0xf000:_putch
+		jmp	.end
+.bad_cmos:
+		mov	bx, ax
+                call    0xf000:_putch
+		mov	bx, dx
+                call    0xf000:_putch
+
+		mov	bx, _bad_cmos
+		call	0xf000:_puts
+
+		mov	dx, RTC_CB
+		mov	ax, 0xf6
+		out	dx, al
+
+		mov 	ax, 0x61
+		mov	dx, RTC_CA
+		out	dx, al
+
+		mov	dx, RTC_CC
+		in	al, dx
+
+		mov	dx, RTC_SECONDS
+		mov	ax, 0
+		out	dx, al
+
+		inc	dx
+		mov	ax, 0xff
+		out	dx, al
+
+		inc	dx
+		mov	ax, 0
+		out	dx, al
+
+		inc	dx
+		mov	ax, 0xff
+		out	dx, al
+
+		inc	dx
+		out	dx, al
+
+		inc	dx
+		out	dx, al
+
+		mov	ax, 1
+		inc	dx
+		out	dx, al
+
+		inc	dx
+		out	dx, al
+
+		inc	dx
+		out	dx, al
+
+		inc	dx
+		out	dx, al
+
+		mov 	ax, 0x21
+		mov	dx, RTC_CA
+		out	dx, al
+
+		mov	dx, RTC_CB
+		mov	ax, 0x6
+		out	dx, al
+		
+.end:
 
 _finish:
 		;sti
@@ -165,7 +262,8 @@ _finish:
 
 ; text constants
 
-_ok:		db	"OK",0x0a,0x0
+_board_ok:	db	"Board OK",0x0a,0x0
+_bad_cmos:	db	"Bad CMOS",0x0a,0x0
 
 
 segment .text		start=0xfff00	align=256

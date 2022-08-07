@@ -13,7 +13,7 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .stub
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFE28  00000128  progbits  .setup
+           FFD00             FFD00             FFEDC  000001DC  progbits  .setup
            FFF00             FFF00             FFF43  00000043  progbits  .text
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
@@ -45,7 +45,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 128
+length:                 1DC
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -144,6 +144,13 @@ Value     Name
 00000001  UART_6BITS
 00000000  UART_5BITS
 00000078  BAUD_9600
+00000080  RTC_BASE
+00000080  RTC_SECONDS
+00000082  RTC_MINUTES
+0000008A  RTC_CA
+0000008B  RTC_CB
+0000008C  RTC_CC
+0000008D  RTC_CD
 
 
 ---- Section .stub ------------------------------------------------------------
@@ -181,8 +188,12 @@ Real              Virtual           Name
            FFDDB             FFDDB  _test_ram_words.halt
            FFDE4             FFDE4  _test_ram_words.end
            FFDEB             FFDEB  _init_serial
-           FFE1F             FFE1F  _finish
-           FFE24             FFE24  _ok
+           FFE1F             FFE1F  _check_rtc
+           FFE68             FFE68  _check_rtc.bad_cmos
+           FFEC3             FFEC3  _check_rtc.end
+           FFEC3             FFEC3  _finish
+           FFEC8             FFEC8  _board_ok
+           FFED2             FFED2  _bad_cmos
 
 ---- Section .text ------------------------------------------------------------
 

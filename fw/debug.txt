@@ -29,6 +29,9 @@ _test_ram_words:
 .end:
 		say_what 0xcafe		; memory test passed
 _init_serial:
+_check_rtc:
+.bad_cmos:
+.end:
 _finish:
 _putch:
 _puts:
