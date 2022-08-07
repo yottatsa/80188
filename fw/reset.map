@@ -12,9 +12,9 @@ Output file:  reset
 
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .stub
-           F0000             F0000             F0016  00000016  progbits  .text
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFE53  00000153  progbits  .setup
+           FFD00             FFD00             FFE28  00000128  progbits  .setup
+           FFF00             FFF00             FFF43  00000043  progbits  .text
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -28,17 +28,6 @@ start:                C0000
 align:                  100
 follows:   not defined
 vstart:               C0000
-valign:    not defined
-vfollows:  not defined
-
----- Section .text ------------------------------------------------------------
-
-class:     progbits
-length:                  16
-start:                F0000
-align:                  100
-follows:   not defined
-vstart:               F0000
 valign:    not defined
 vfollows:  not defined
 
@@ -56,11 +45,22 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 153
+length:                 128
 start:                FFD00
 align:     not defined
 follows:   not defined
 vstart:               FFD00
+valign:    not defined
+vfollows:  not defined
+
+---- Section .text ------------------------------------------------------------
+
+class:     progbits
+length:                  43
+start:                FFF00
+align:                  100
+follows:   not defined
+vstart:               FFF00
 valign:    not defined
 vfollows:  not defined
 
@@ -131,6 +131,7 @@ Value     Name
 00000004  UART_FCR_TXRESET
 00000007  UART_FCR_FIFOSETUP
 00000020  UART_LSR_THREMPTY
+00000001  UART_LSR_RBRDATA
 00000080  UART_EFR_AUTOCTS
 00000040  UART_EFR_AUTORTS
 000000C0  UART_EFR_HWHANDSHAKE
@@ -149,16 +150,6 @@ Value     Name
 
 Real              Virtual           Name
            C0000             C0000  _mon
-
----- Section .text ------------------------------------------------------------
-
-Real              Virtual           Name
-           F0000             F0000  _8250_init
-           F0000             F0000  _serial_putch
-           F0000             F0000  _serial_puts
-           F0000             F0000  _putch
-           F0005             F0005  ..@5.wait_empty
-           F0013             F0013  _getch
 
 ---- Section .data ------------------------------------------------------------
 
@@ -190,14 +181,24 @@ Real              Virtual           Name
            FFDDB             FFDDB  _test_ram_words.halt
            FFDE4             FFDE4  _test_ram_words.end
            FFDEB             FFDEB  _init_serial
-           FFE17             FFE17  _print_version
-           FFE1D             FFE1D  _print_version.loop
-           FFE28             FFE28  _print_version.end
-           FFE2C             FFE2C  _finish
-           FFE2F             FFE2F  ..@23.loop
-           FFE3B             FFE3B  ..@24.wait_empty
-           FFE49             FFE49  ..@23.end
-           FFE4F             FFE4F  _ok
+           FFE1F             FFE1F  _finish
+           FFE24             FFE24  _ok
+
+---- Section .text ------------------------------------------------------------
+
+Real              Virtual           Name
+           FFF00             FFF00  _8250_init
+           FFF00             FFF00  _serial_putch
+           FFF00             FFF00  _serial_getch
+           FFF00             FFF00  _serial_puts
+           FFF00             FFF00  _putch
+           FFF05             FFF05  ..@22.wait_empty
+           FFF13             FFF13  _puts
+           FFF16             FFF16  ..@23.loop
+           FFF22             FFF22  ..@24.wait_empty
+           FFF30             FFF30  ..@23.end
+           FFF34             FFF34  _getch
+           FFF38             FFF38  ..@25.wait_data
 
 ---- Section .restart ---------------------------------------------------------
 

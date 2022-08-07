@@ -23,7 +23,7 @@ UART_5BITS	equ	0x00
 UART_PRESCALER	equ	0x03
 UART_X64	equ	0x03
 UART_X16	equ	0x02
-UART_X1	equ	0x01
+UART_X1 	equ	0x01
 UART_SYNC_MODE	equ	0x00	; not implemented
 
 

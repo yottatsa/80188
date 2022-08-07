@@ -18,6 +18,7 @@ UART_FCR_RXRESET	equ	(1 << 1)
 UART_FCR_TXRESET	equ	(1 << 2)
 UART_FCR_FIFOSETUP	equ	(UART_FCR_FIFOENABLE | UART_FCR_RXRESET | UART_FCR_TXRESET)
 UART_LSR_THREMPTY	equ	(1 << 5)
+UART_LSR_RBRDATA	equ	(1 << 0)
 UART_EFR_AUTOCTS	equ	(1 << 7)
 UART_EFR_AUTORTS	equ	(1 << 6)
 UART_EFR_HWHANDSHAKE	equ	(UART_EFR_AUTOCTS | UART_EFR_AUTORTS)
@@ -83,8 +84,6 @@ _8250_init:
 
 _serial_putch:
 %macro	_serial_putch 1
-;; blocking putch into serial
-;; destroys AX, DX
 		mov	dx, UART_LSR
 %%wait_empty:	in	al, dx
 		and	al, UART_LSR_THREMPTY
@@ -96,9 +95,23 @@ _serial_putch:
 %endmacro
 
 
+_serial_getch:
+%macro	_serial_getch 1
+		mov	dx, UART_LSR
+%%wait_data:	in	%1, dx
+		and	%1, UART_LSR_RBRDATA
+		jz	%%wait_data
+		mov	dx, UART_RBR
+		in	%1, dx
+%endmacro
+
 _serial_puts:
 %macro	_serial_puts 1
 		mov	bx, %1
+		__serial_puts
+%endmacro
+
+%macro	__serial_puts 0
 %%loop:
 		mov	al, [ds:bx]
 		cmp	al, 0

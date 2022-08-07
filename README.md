@@ -3,6 +3,14 @@
 * testing and firmware development: r1
 * hardware development: r2
 
+To program
+
+    minipro -p SST39SF020A@PLCC32 --write fw/fw.bin
+
+To connect
+
+    picocom -q --baud 9600 --imap lfcrlf --omap crlf [serial device]
+
 ## Configuration
 
 * 8MHz 8086-compatible CPU

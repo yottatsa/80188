@@ -1,6 +1,4 @@
 _mon:
-_putch:
-_getch:
 _setup:
 		say_what 0xb007		; jumped to the setup code
 		say_what 0xb105
@@ -31,7 +29,8 @@ _test_ram_words:
 .end:
 		say_what 0xcafe		; memory test passed
 _init_serial:
-_print_version:
-.loop:
 _finish:
+_putch:
+_puts:
+_getch:
 _restart:

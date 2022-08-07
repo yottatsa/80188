@@ -2,7 +2,7 @@ CPU 186
 USE16
 
 ; for map generation only
-GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _getch, _version
+GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _puts, _getch, _version
 %ifndef NOMAP
 [map all reset.map]
 %endif
@@ -25,26 +25,6 @@ segment .stub		start=0xc0000	align=256
 ; 256k flash monitor stub
 _mon:
 		jmp	_mon
-
-
-segment .text		start=0xf0000	align=256
-; BIOS functions
-_putch:
-;; write the content of BL over serial, blocking
-		push	ax
-		push	dx
-
-		_serial_putch bx
-
-		pop	dx
-		pop	ax
-		retf
-
-_getch:
-		push	dx
-		pop	dx
-		retf
-
 
 
 segment .data		start=0xffc00	align=256
@@ -175,29 +155,46 @@ _test_ram_words:
 
 
 _init_serial:
-		_8250_init	BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
-_print_version:
-		mov		dx, UART_THR
-		mov		bx, _version
-.loop:
-		mov		al, [ds:bx]
-		cmp		al, 0
-		jz		.end
-		out		dx, al
-		inc		bx
-		jmp		.loop
-.end
-		mov		ax, 0x0a
-		out		dx, al
+		_8250_init BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
+		mov	bx, _ok
+		call	0xf000:_puts
 
 _finish:
-		_serial_puts	_ok
-		sti
+		;sti
 		jmp	0xc000:_mon
 
 ; text constants
 
 _ok:		db	"OK",0x0a,0x0
+
+
+segment .text		start=0xfff00	align=256
+; BIOS functions
+_putch:
+;; write the byte from BL on console
+		push	ax
+		push	dx
+		_serial_putch bx
+		pop	dx
+		pop	ax
+		retf
+
+_puts:
+;; write the null-terminated string from [ds:bx]
+		push	ax
+		push	cx
+		push	dx
+		__serial_puts
+		pop	dx
+		pop	cx
+		pop	ax
+		retf
+
+_getch:
+		push	dx
+		_serial_getch al
+		pop	dx
+		retf
 
 
 segment .restart	start=0xffff0	progbits
@@ -208,6 +205,7 @@ segment .restart	start=0xffff0	progbits
 _restart:
 		cli
 		jmp	0xffd0:0
+
 
 segment .version
 ; version and padding
