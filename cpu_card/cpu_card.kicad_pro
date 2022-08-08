@@ -45,7 +45,7 @@
         "silk_text_upright": false,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.762
+          "min_clearance": 0.0
         }
       },
       "diff_pair_dimensions": [
@@ -384,7 +384,6 @@
         "microvia_drill": 0.1,
         "name": "PWR",
         "nets": [
-          "16V8.GND",
           "GND",
           "USB.VCC",
           "VBAT",

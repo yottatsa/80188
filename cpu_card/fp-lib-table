@@ -3,7 +3,7 @@
   (lib (name "ISA-X")(type "KiCad")(uri "${KIPRJMOD}/ISA-X")(options "")(descr ""))
   (lib (name "SN74ABT16841DL")(type "KiCad")(uri "${KIPRJMOD}/SN74ABT16841DL")(options "")(descr ""))
   (lib (name "69802-132LF")(type "KiCad")(uri "${KIPRJMOD}/69802-132LF")(options "")(descr ""))
-  (lib (name "61729-0010BLF")(type "KiCad")(uri "${KIPRJMOD}/61729-0010BLF")(options "")(descr ""))
+  (lib (name "61729-0010BLF")(type "KiCad")(uri "${KIPRJMOD}/61729-0010BLF")(options "")(descr "")(disabled))
   (lib (name "MAX241CWI")(type "KiCad")(uri "${KIPRJMOD}/MAX241CWI")(options "")(descr ""))
   (lib (name "80C188")(type "KiCad")(uri "${KIPRJMOD}/80C188")(options "")(descr ""))
   (lib (name "A-USB_B_SMT")(type "KiCad")(uri "${KIPRJMOD}/A-USB_B_SMT")(options "")(descr ""))

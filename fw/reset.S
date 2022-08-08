@@ -1,33 +1,23 @@
+; Nano-BIOS; initialises peripherals and provides minimal IO.
+
 CPU 186
 USE16
 
-; for map generation only
-GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _puts, _getch, _version
-%ifndef NOMAP
-[map all reset.map]
-%endif
-
-
-; debug output
-%macro  say_what 1
-;; destroys AX, DX
-		mov	dx, 0x220
-		mov	ax, %1
-		out	dx, ax
-%endmacro
-
+%define	NOSYM
+%include "reset.inc"
 
 %include "amd80c188.inc"
 %include "platform.inc"
 
 
-segment .stub		start=0xc0000	align=256
+segment .text		start=0xc0000	align=256
 ; 256k flash monitor stub
 _mon:
 		jmp	_mon
 
 
 segment .data		start=0xffc00	align=256
+; /UMCS is configured for upper 1024K after RESET
 ; platform constants in ROM space
 ; useful to read/change parameters
 SETUPSUM16:	dw	0x0000		; updated during build	
@@ -95,7 +85,7 @@ _set_pcs:
 _test_setup_rom:
 		mov	si, 0xfd00
 		mov	bx, 0x0
-		mov	cx, 384
+		mov	cx, (0x300 >> 1)
 .loop:
 		add	bx, [ds:si]
 		inc	si
@@ -156,8 +146,7 @@ _test_ram_words:
 
 _init_serial:
 		_8250_init BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
-		mov	bx, _board_ok
-		call	0xf000:_puts
+		puts	_board_ok
 
 _check_rtc:
 		mov	dx, RTC_CD
@@ -178,28 +167,31 @@ _check_rtc:
 		cmp	ax, bx
 		jne	.bad_cmos
 
+.datetime:
+		puts	_datetime
+
+		mov	dx, RTC_HOURS
+		in	al, dx
+		putbyte	al
+		putch	":"
 		mov	dx, RTC_MINUTES
 		in	al, dx
-		mov	bx, ax
-		call	0xf000:_putch
-		mov	bx, ":"
-		call	0xf000:_putch
+		putbyte	al
+		putch	":"
 		mov	dx, RTC_SECONDS
 		in	al, dx
-		mov	bx, ax
-		call	0xf000:_putch
-		mov	bx, 0x0a
-		call	0xf000:_putch
+		putbyte	al
+		
+		putch	0x0a
 		jmp	.end
+
 .bad_cmos:
-		mov	bx, ax
-                call    0xf000:_putch
-		mov	bx, dx
-                call    0xf000:_putch
+		puts	_bad_cmos
+		putbyte	al
+		putbyte	dl
+		putch	0x0a
 
-		mov	bx, _bad_cmos
-		call	0xf000:_puts
-
+.reset_cmos:
 		mov	dx, RTC_CB
 		mov	ax, 0xf6
 		out	dx, al
@@ -215,35 +207,32 @@ _check_rtc:
 		mov	ax, 0
 		out	dx, al
 
-		inc	dx
-		mov	ax, 0xff
+		inc	dx ;01
 		out	dx, al
 
-		inc	dx
-		mov	ax, 0
+		inc	dx ;02
 		out	dx, al
 
-		inc	dx
-		mov	ax, 0xff
+		inc	dx ;03
 		out	dx, al
 
-		inc	dx
+		inc	dx ;04
 		out	dx, al
 
-		inc	dx
+		inc	dx ;05
 		out	dx, al
 
 		mov	ax, 1
-		inc	dx
+		inc	dx ;06
 		out	dx, al
 
-		inc	dx
+		inc	dx ;07
 		out	dx, al
 
-		inc	dx
+		inc	dx ;08
 		out	dx, al
 
-		inc	dx
+		inc	dx ;09
 		out	dx, al
 
 		mov 	ax, 0x21
@@ -253,7 +242,6 @@ _check_rtc:
 		mov	dx, RTC_CB
 		mov	ax, 0x6
 		out	dx, al
-		
 .end:
 
 _finish:
@@ -263,10 +251,11 @@ _finish:
 ; text constants
 
 _board_ok:	db	"Board OK",0x0a,0x0
-_bad_cmos:	db	"Bad CMOS",0x0a,0x0
+_datetime:	db	"Time: ",0x0
+_bad_cmos:	db	"Bad CMOS: ",0x0
 
 
-segment .text		start=0xfff00	align=256
+;segment .text		start=0xfff00	align=256
 ; BIOS functions
 _putch:
 ;; write the byte from BL on console
@@ -289,9 +278,53 @@ _puts:
 		retf
 
 _getch:
+;; return the byte in AL
 		push	dx
 		_serial_getch al
 		pop	dx
+		retf
+
+_putnibble:
+;; print a nibble from BL
+		and	bl, 0xf
+		cmp	bl, 9
+		jg	.hex
+		add	bl, '0'
+		jmp	.print
+.hex:
+		add	bl, 'a' - 10
+.print:
+		call	0xf000:_putch
+		retf
+
+_putbyte:
+;; print a byte in hex from BL
+		push 	ax
+		mov	al, bl
+		shr	bl, 4
+		call	0xf000:_putnibble
+		mov	bl, al
+		call	0xf000:_putnibble
+		pop	ax
+		retf
+
+_putdec:
+;; print a two digits decimal number from BL
+;; todo CL digits number with leading zeros
+		cmp	bl, 9
+		jng	.print
+.reduceprint:
+		push	ax
+		mov	al, 10
+		div	bl
+		mov	bl, al
+		;add	bl, '0'
+		call	0xf000:_putnibble
+		mov	bl, ah
+		pop	ax
+.print:
+		;add	bl, '0'
+		call	0xf000:_putnibble
 		retf
 
 
@@ -307,4 +340,4 @@ _restart:
 
 segment .version
 ; version and padding
-_version:	db	"r0.1v0.2"
+_version:	db	"r0.1v0.3"

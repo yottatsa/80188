@@ -1,13 +1,18 @@
 sources = reset.S monitor.S
 targets = fw.bin debug.txt
 
+DD = $(shell which dd)
+ifeq ($(DD),/usr/bin/dd)
+dd_args = status=none
+endif
+
 all: $(targets)
 
 # firmware
 fw.bin: $(sources:.S=) 
-	dd if=reset of=$@.gen bs=1024 skip=255 seek=255 status=none
-	dd if=monitor of=$@.gen bs=1024 conv=notrunc status=none
-	python checksum.py $@.gen
+	dd if=reset of=$@.gen bs=1024 skip=255 seek=255 $(dd_args)
+	dd if=monitor of=$@.gen bs=1024 conv=notrunc $(dd_args)
+	python3 checksum.py $@.gen
 	mv $@.gen $@
 
 # exports symbols as constants

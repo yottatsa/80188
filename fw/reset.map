@@ -11,16 +11,15 @@ Output file:  reset
 -- Sections (summary) ---------------------------------------------------------
 
 Vstart            Start             Stop              Length    Class     Name
-           C0000             C0000             C0002  00000002  progbits  .stub
+           C0000             C0000             C0002  00000002  progbits  .text
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFEDC  000001DC  progbits  .setup
-           FFF00             FFF00             FFF43  00000043  progbits  .text
+           FFD00             FFD00             FFF81  00000281  progbits  .setup
            FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
 -- Sections (detailed) --------------------------------------------------------
 
----- Section .stub ------------------------------------------------------------
+---- Section .text ------------------------------------------------------------
 
 class:     progbits
 length:                   2
@@ -45,22 +44,11 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 1DC
+length:                 281
 start:                FFD00
 align:     not defined
 follows:   not defined
 vstart:               FFD00
-valign:    not defined
-vfollows:  not defined
-
----- Section .text ------------------------------------------------------------
-
-class:     progbits
-length:                  43
-start:                FFF00
-align:                  100
-follows:   not defined
-vstart:               FFF00
 valign:    not defined
 vfollows:  not defined
 
@@ -147,15 +135,20 @@ Value     Name
 00000080  RTC_BASE
 00000080  RTC_SECONDS
 00000082  RTC_MINUTES
+00000084  RTC_HOURS
 0000008A  RTC_CA
 0000008B  RTC_CB
 0000008C  RTC_CC
 0000008D  RTC_CD
 
 
----- Section .stub ------------------------------------------------------------
+---- Section .text ------------------------------------------------------------
 
 Real              Virtual           Name
+           C0000             C0000  _8250_init
+           C0000             C0000  _serial_putch
+           C0000             C0000  _serial_getch
+           C0000             C0000  _serial_puts
            C0000             C0000  _mon
 
 ---- Section .data ------------------------------------------------------------
@@ -189,27 +182,29 @@ Real              Virtual           Name
            FFDE4             FFDE4  _test_ram_words.end
            FFDEB             FFDEB  _init_serial
            FFE1F             FFE1F  _check_rtc
-           FFE68             FFE68  _check_rtc.bad_cmos
-           FFEC3             FFEC3  _check_rtc.end
-           FFEC3             FFEC3  _finish
-           FFEC8             FFEC8  _board_ok
-           FFED2             FFED2  _bad_cmos
-
----- Section .text ------------------------------------------------------------
-
-Real              Virtual           Name
-           FFF00             FFF00  _8250_init
-           FFF00             FFF00  _serial_putch
-           FFF00             FFF00  _serial_getch
-           FFF00             FFF00  _serial_puts
-           FFF00             FFF00  _putch
-           FFF05             FFF05  ..@22.wait_empty
-           FFF13             FFF13  _puts
-           FFF16             FFF16  ..@23.loop
-           FFF22             FFF22  ..@24.wait_empty
-           FFF30             FFF30  ..@23.end
-           FFF34             FFF34  _getch
-           FFF38             FFF38  ..@25.wait_data
+           FFE40             FFE40  _check_rtc.datetime
+           FFE80             FFE80  _check_rtc.bad_cmos
+           FFE9D             FFE9D  _check_rtc.reset_cmos
+           FFED9             FFED9  _check_rtc.end
+           FFED9             FFED9  _finish
+           FFEDE             FFEDE  _board_ok
+           FFEE8             FFEE8  _datetime
+           FFEEF             FFEEF  _bad_cmos
+           FFEFA             FFEFA  _putch
+           FFEFF             FFEFF  ..@45.wait_empty
+           FFF0D             FFF0D  _puts
+           FFF10             FFF10  ..@46.loop
+           FFF1C             FFF1C  ..@47.wait_empty
+           FFF2A             FFF2A  ..@46.end
+           FFF2E             FFF2E  _getch
+           FFF32             FFF32  ..@48.wait_data
+           FFF3D             FFF3D  _putnibble
+           FFF4A             FFF4A  _putnibble.hex
+           FFF4D             FFF4D  _putnibble.print
+           FFF53             FFF53  _putbyte
+           FFF67             FFF67  _putdec
+           FFF6C             FFF6C  _putdec.reduceprint
+           FFF7B             FFF7B  _putdec.print
 
 ---- Section .restart ---------------------------------------------------------
 

@@ -10,5 +10,5 @@ with open(sys.argv[1], "rb+") as f:
         i = i + 1
         checksum = (checksum + struct.unpack('<H', f.read(2))[0]) % 0x10000
     f.seek(0x3fc00)
-    print(i, hex(checksum))
+    print(hex(i*2), "bytes,", hex(checksum))
     f.write(struct.pack('<H', checksum))
