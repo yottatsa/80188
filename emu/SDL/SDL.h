@@ -1,0 +1,1 @@
+#define SDL_FULLSCREEN 0
