@@ -21,22 +21,11 @@
    load ROM binaries, and kickstart the CPU emulator. */
 
 #include "config.h"
-#ifdef __APPLE__      /* Memory leaks occur in OS X when the SDL window gets */
-#include <SDL/SDL.h>  /* resized if SDL.h not included in file with main() */
-#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <memory.h>
-#include "mutex.h"
-#ifdef _WIN32
-CRITICAL_SECTION screenmutex;
-#else
-#ifndef __APPLE__
-#include <X11/Xlib.h>
-#endif
-pthread_t consolethread;
-#endif
 
 const uint8_t *build = BUILD_STRING;
 
@@ -115,7 +104,6 @@ uint32_t loadbios (uint8_t *filename) {
 	return (readsize);
 }
 
-extern uint32_t SDL_GetTicks();
 extern uint8_t insertdisk (uint8_t drivenum, char *filename);
 extern void ejectdisk (uint8_t drivenum);
 extern uint8_t bootdrive, ethif, net_enabled;
@@ -129,6 +117,7 @@ void initaudio();
 void init8253();
 void init8259();
 extern void init8237();
+extern void initx186();
 extern void initVideoPorts();
 extern void killaudio();
 extern void initsermouse (uint16_t baseport, uint8_t irq);
@@ -157,73 +146,34 @@ void printbinary (uint8_t value) {
 
 uint8_t usessource = 0;
 void inithardware() {
-#ifdef NETWORKING_ENABLED
-	if (ethif != 254) initpcap();
-#endif
 	printf ("Initializing emulated hardware:\n");
 	memset (port_write_callback, 0, sizeof (port_write_callback) );
 	memset (port_read_callback, 0, sizeof (port_read_callback) );
 	memset (port_write_callback16, 0, sizeof (port_write_callback16) );
 	memset (port_read_callback16, 0, sizeof (port_read_callback16) );
+	printf ("  - x186 platform: ");
+	initx186();
+	printf ("OK\n");
 	printf ("  - Intel 8253 timer: ");
 	init8253();
 	printf ("OK\n");
 	printf ("  - Intel 8259 interrupt controller: ");
 	init8259();
 	printf ("OK\n");
-	printf ("  - Intel 8237 DMA controller: ");
-	init8237();
-	printf ("OK\n");
-	initVideoPorts();
-	if (usessource) {
-			printf ("  - Disney Sound Source: ");
-			initsoundsource();
-			printf ("OK\n");
-		}
-#ifndef NETWORKING_OLDCARD
-	printf ("  - Novell NE2000 ethernet adapter: ");
-	isa_ne2000_init (0x300, 6);
-	printf ("OK\n");
-#endif
-	printf ("  - Adlib FM music card: ");
-	initadlib (0x388);
-	printf ("OK\n");
-	printf ("  - Creative Labs Sound Blaster 2.0: ");
-	initBlaster (0x220, 7);
-	printf ("OK\n");
-	printf ("  - Serial mouse (Microsoft compatible): ");
-	initsermouse (0x3F8, 4);
-	printf ("OK\n");
-	if (doaudio) initaudio();
 	inittiming();
-	initscreen ( (uint8_t *) build);
 }
 
 uint8_t dohardreset = 0;
 uint8_t audiobufferfilled();
 
-#ifdef _WIN32
-void initmenus();
-void EmuThread (void *dummy) {
-#else
-pthread_t emuthread;
 void *EmuThread (void *dummy) {
-#endif
 	while (running) {
 			if (!speed) exec86 (10000);
 			else {
 				exec86(speed / 100);
-				while (!audiobufferfilled()) {
-					timing();
-					tickaudio();
-				}
-#ifdef _WIN32
-				Sleep(10);
-#else
+				timing();
 				usleep(10000);
-#endif
 			}
-			if (scrmodechange) doscrmodechange();
 			if (dohardreset) {
 				reset86();
 				dohardreset = 0;
@@ -231,12 +181,8 @@ void *EmuThread (void *dummy) {
 		}
 }
 
-#ifdef _WIN32
-void runconsole (void *dummy);
-#else
 void *runconsole (void *dummy);
-#endif
-extern void bufsermousedata (uint8_t value);
+
 int main (int argc, char *argv[]) {
 	uint32_t biossize;
 
@@ -248,6 +194,7 @@ int main (int argc, char *argv[]) {
 	memset (readonly, 0, 0x100000);
 	biossize = loadbios (biosfile);
 	if (!biossize) return (-1);
+/*
 #ifdef DISK_CONTROLLER_ATA
 	if (!loadrom (0xD0000UL, PATH_DATAFILES "ide_xt.bin", 1) ) return (-1);
 #endif
@@ -255,67 +202,16 @@ int main (int argc, char *argv[]) {
 		loadrom (0xF6000UL, PATH_DATAFILES "rombasic.bin", 0);
 		if (!loadrom (0xC0000UL, PATH_DATAFILES "videorom.bin", 1) ) return (-1);
 	}
+*/
 	printf ("\nInitializing CPU... ");
 	running = 1;
 	reset86();
 	printf ("OK!\n");
 
-#ifndef _WIN32
-#ifndef __APPLE__
-	XInitThreads();
-#endif
-#endif
 	inithardware();
 
-#ifdef _WIN32
-	initmenus();
-	InitializeCriticalSection (&screenmutex);
-#endif
-	if (useconsole) {
-#ifdef _WIN32
-			_beginthread (runconsole, 0, NULL);
-#else
-			pthread_create (&consolethread, NULL, (void *) runconsole, NULL);
-#endif
-		}
-
-#ifdef _WIN32
-			_beginthread (EmuThread, 0, NULL);
-#else
-			pthread_create (&emuthread, NULL, (void *) EmuThread, NULL);
-#endif
-
-	lasttick = starttick = SDL_GetTicks();
-	while (running) {
-			handleinput();
-#ifdef NETWORKING_ENABLED
-			if (ethif < 254) dispatch();
-#endif
-#ifdef _WIN32
-			Sleep(1);
-#else
-			usleep(1000);
-#endif
-	}
-	endtick = (SDL_GetTicks() - starttick) / 1000;
-	if (endtick == 0) endtick = 1; //avoid divide-by-zero exception in the code below, if ran for less than 1 second
-
-	killaudio();
-
-	if (renderbenchmark) {
-			printf ("\n%llu frames rendered in %llu seconds.\n", totalframes, endtick);
-			printf ("Average framerate: %llu FPS.\n", totalframes / endtick);
-		}
-
-	printf ("\n%llu instructions executed in %llu seconds.\n", totalexec, endtick);
-	printf ("Average speed: %llu instructions/second.\n", totalexec / endtick);
-
-#ifdef CPU_ADDR_MODE_CACHE
-	printf ("\n  Cached modregrm data access count: %llu\n", cached_access_count);
-	printf ("Uncached modregrm data access count: %llu\n", uncached_access_count);
-#endif
-
-	if (useconsole)	exit (0); //makes sure console thread quits even if blocking
+	//EmuThread(NULL);
+	exec86 (500);
 
 	return (0);
 }

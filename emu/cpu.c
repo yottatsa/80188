@@ -129,12 +129,14 @@ void write86 (uint32_t addr32, uint8_t value) {
 }
 
 void writew86 (uint32_t addr32, uint16_t value) {
+	// printf("WR[%x] ", (int)addr32);
 	write86 (addr32, (uint8_t) value);
 	write86 (addr32 + 1, (uint8_t) (value >> 8) );
 }
 
 uint8_t read86 (uint32_t addr32) {
 	addr32 &= 0xFFFFF;
+	// printf("RD[%x] ", (int)addr32);
 	if ( (addr32 >= 0xA0000) && (addr32 <= 0xBFFFF) ) {
 			if ( (vidmode == 0xD) || (vidmode == 0xE) || (vidmode == 0x10) || (vidmode == 0x12) ) return (readVGA (addr32 - 0xA0000) );
 			if ( (vidmode != 0x13) && (vidmode != 0x12) && (vidmode != 0xD) ) return (RAM[addr32]);
