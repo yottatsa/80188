@@ -3,9 +3,15 @@
 * testing and firmware development: r1
 * hardware development: r2
 
+To emulate
+
+    make run
+
 To program
 
+    make fw gal
     minipro -p SST39SF020A@PLCC32 --write fw/fw.bin
+    minipro -p ... --write gal/....pld
 
 To connect
 

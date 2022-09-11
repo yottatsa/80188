@@ -3,7 +3,7 @@ INCLUDE=-I.
 
 all: fake86
 
-fake86: main.c cpu.c ports.c i8253.c i8259.c timing.c parsecl.c stubs.c x186.c i8250.c
+fake86: main.c cpu.c ports.c i8253.c i8259.c timing.c parsecl.c stubs.c x186.c i8250.c cmos.c
 	$(CC) $^ -o $@ $(CFLAGS) $(INCLUDE) $(LIBS)
 
 run: fake86
@@ -13,6 +13,6 @@ debug: fake86
 	./$< -bios ../fw/fw.bin -verbose
 
 clean:
-	rm -f fake86
+	rm -f fake86 cmos.bin
 
 .PHONY: all clean run debug

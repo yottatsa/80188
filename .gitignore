@@ -25,3 +25,7 @@ _autosave*
 
 cpu_card/*.stp
 cpu_card/*.step
+
+emu/cmos.bin
+emu/fake86
+emu/fake86-*/

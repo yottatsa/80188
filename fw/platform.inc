@@ -1,3 +1,5 @@
+%include "amd80c188.inc"
+
 ; serial (SC16C752B)
 UART_BASE	equ	PCS0
 %include "8250.S"

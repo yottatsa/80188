@@ -117,6 +117,7 @@ void initaudio();
 void init8253();
 void init8259();
 void init8237();
+extern void initcmos();
 extern void init8250();
 extern void initx186();
 extern void initVideoPorts();
@@ -157,6 +158,10 @@ void inithardware() {
 	printf ("OK\n");
 	printf ("  - Intel 8250 USART: ");
 	init8250();
+	printf ("OK\n");
+	printf ("  - CMOS: ");
+	initcmos();
+	printf ("OK\n");
 	printf ("  - Intel 8253 timer: ");
 	init8253();
 	printf ("OK\n");

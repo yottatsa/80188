@@ -5,8 +5,6 @@ USE16
 
 %define	NOSYM
 %include "reset.inc"
-
-%include "amd80c188.inc"
 %include "platform.inc"
 
 
@@ -157,7 +155,7 @@ _check_rtc:
 
 		mov	dx, RTC_CB
 		in	al, dx
-		mov	bx, 0x06
+		mov	bx, 0x02
 		cmp	ax, bx
 		jne	.bad_cmos
 
@@ -193,7 +191,7 @@ _check_rtc:
 
 .reset_cmos:
 		mov	dx, RTC_CB
-		mov	ax, 0xf6
+		mov	ax, 0xf2
 		out	dx, al
 
 		mov 	ax, 0x61
@@ -240,7 +238,7 @@ _check_rtc:
 		out	dx, al
 
 		mov	dx, RTC_CB
-		mov	ax, 0x6
+		mov	ax, 0x02
 		out	dx, al
 .end:
 
@@ -340,4 +338,4 @@ _restart:
 
 segment .version
 ; version and padding
-_version:	db	"r0.1v0.3"
+_version:	db	"r0.1v0.4"

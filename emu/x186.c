@@ -2,11 +2,9 @@
 #include <stdint.h>
 #include <string.h>
 #include "x186.h"
+#include "ports.h"
 
 struct structx186 x186;
-
-extern void set_port_write_redirector_16(uint16_t startport, uint16_t endport, void *callback);
-extern void set_port_read_redirector_16(uint16_t startport, uint16_t endport, void *callback);
 
 uint16_t inx186(uint16_t portnum) {
 	switch (portnum & 0xff) {
