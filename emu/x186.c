@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include "x186.h"
@@ -22,8 +23,13 @@ void outx186(uint16_t portnum, uint16_t value) {
 	}
 }
 
+void debugx186(uint16_t portnum, uint16_t value) {
+	printf("debug(0x%x);\n", value);
+}
+
 void initx186() {
 	 memset((void *)&x186, 0, sizeof(x186));
 	 set_port_write_redirector_16((uint16_t) 0xff00, (uint16_t) 0xffff, &outx186);
 	 set_port_read_redirector_16((uint16_t) 0xff00, (uint16_t) 0xffff, &inx186);
+	 set_port_write_redirector_16((uint16_t) 0x220, (uint16_t) 0x220, &debugx186);
 }

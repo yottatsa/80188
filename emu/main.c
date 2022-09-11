@@ -116,7 +116,8 @@ void inittiming();
 void initaudio();
 void init8253();
 void init8259();
-extern void init8237();
+void init8237();
+extern void init8250();
 extern void initx186();
 extern void initVideoPorts();
 extern void killaudio();
@@ -154,6 +155,8 @@ void inithardware() {
 	printf ("  - x186 platform: ");
 	initx186();
 	printf ("OK\n");
+	printf ("  - Intel 8250 USART: ");
+	init8250();
 	printf ("  - Intel 8253 timer: ");
 	init8253();
 	printf ("OK\n");
@@ -210,8 +213,8 @@ int main (int argc, char *argv[]) {
 
 	inithardware();
 
-	//EmuThread(NULL);
-	exec86 (500);
+	EmuThread(NULL);
+	//exec86 (10000);
 
 	return (0);
 }
