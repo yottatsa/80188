@@ -15,7 +15,7 @@ Vstart            Start             Stop              Length    Class     Name
            FE000             FE000             FE000  00000000  progbits  .ibmdata
            FE05B             FE05B             FE067  0000000C  progbits  .ibmtext
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFF82  00000282  progbits  .setup
+           FFD00             FFD00             FFF97  00000297  progbits  .setup
            FFFF0             FFFF0             FFFF5  00000005  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
@@ -68,7 +68,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 282
+length:                 297
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -157,7 +157,7 @@ Value     Name
 00000000  UART_5BITS
 00000078  BAUD_9600
 00000080  RTC_BASE
-00000002  RTC_MODE
+00000006  RTC_MODE
 00000080  RTC_SECONDS
 00000082  RTC_MINUTES
 00000084  RTC_HOURS
@@ -227,13 +227,13 @@ Real              Virtual           Name
            FFEE9             FFEE9  _datetime
            FFEF0             FFEF0  _bad_rtc
            FFEFB             FFEFB  _putch
-           FFF00             FFF00  ..@48.wait_empty
+           FFF00             FFF00  ..@51.wait_empty
            FFF0E             FFF0E  _puts
-           FFF11             FFF11  ..@49.loop
-           FFF1D             FFF1D  ..@50.wait_empty
-           FFF2B             FFF2B  ..@49.end
+           FFF11             FFF11  ..@52.loop
+           FFF1D             FFF1D  ..@53.wait_empty
+           FFF2B             FFF2B  ..@52.end
            FFF2F             FFF2F  _getch
-           FFF33             FFF33  ..@51.wait_data
+           FFF33             FFF33  ..@54.wait_data
            FFF3E             FFF3E  _putnibble
            FFF4B             FFF4B  _putnibble.hex
            FFF4E             FFF4E  _putnibble.print
@@ -241,6 +241,8 @@ Real              Virtual           Name
            FFF68             FFF68  _putdec
            FFF6D             FFF6D  _putdec.reduceprint
            FFF7C             FFF7C  _putdec.print
+           FFF82             FFF82  _putdec.leadzero
+           FFF87             FFF87  ..@55.wait_empty
 
 ---- Section .restart ---------------------------------------------------------
 

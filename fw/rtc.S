@@ -65,3 +65,14 @@ _rtc_reset:
 		mov	ax, %1
 		out	dx, al
 %endmacro
+
+%macro _putrtc 1
+%ifndef PRE
+; this won't work on preprocessing
+%if RTC_MODE & RTC_CB_DM_BIN
+		putdec	%1
+%else
+		putbyte	%1
+%endif
+%endif
+%endmacro

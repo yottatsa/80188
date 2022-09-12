@@ -7,8 +7,7 @@ BAUD_9600	equ	120
 
 ; AT-compatible RTC (DS12885T)
 RTC_BASE	equ	PCS1
-;%define	RTCMODE	(RTC_CB_DM_BIN | RTC_CB_24 | RTC_CB_DSE)
-RTC_MODE	equ	(RTC_CB_24)
+RTC_MODE	equ	(RTC_CB_24 | RTC_CB_DM_BIN)
 
 %include "rtc.S"
 

@@ -35,7 +35,7 @@ clean:
 
 # deps
 %.d: %.S
-	nasm -M $^ > $@
+	nasm -DPRE -M $^ > $@
 include $(sources:.S=.d)
 
 .PHONY: all clean

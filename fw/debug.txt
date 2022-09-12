@@ -47,4 +47,5 @@ _putbyte:
 _putdec:
 .reduceprint:
 .print:
+.leadzero:
 _restart:

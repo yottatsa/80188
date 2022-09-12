@@ -186,16 +186,18 @@ _check_rtc:
 
 		mov	dx, RTC_HOURS
 		in	al, dx
-		putbyte	al
+
+		_putrtc	al
 		putch	":"
 		mov	dx, RTC_MINUTES
 		in	al, dx
-		putbyte	al
+
+		_putrtc	al
 		putch	":"
 		mov	dx, RTC_SECONDS
 		in	al, dx
-		putbyte	al
-		
+		_putrtc	al
+
 		putch	0x0a
 		jmp	.end
 
@@ -277,20 +279,25 @@ _putdec:
 ;; print a two digits decimal number from BL
 ;; todo CL digits number with leading zeros
 		cmp	bl, 9
-		jng	.print
+		jng	.leadzero
 .reduceprint:
 		push	ax
-		mov	al, 10
+		mov	bl, 10
 		div	bl
 		mov	bl, al
-		;add	bl, '0'
 		call	0xf000:_putnibble
 		mov	bl, ah
 		pop	ax
 .print:
-		;add	bl, '0'
 		call	0xf000:_putnibble
 		retf
+.leadzero:
+		push	ax
+		push	dx
+		_serial_putch '0'
+		pop	dx
+		pop	ax
+		jmp	.print
 
 
 segment .restart	start=0xffff0	progbits
