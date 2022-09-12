@@ -1,3 +1,3 @@
 #include <stdint.h>
 
-extern uint8_t dohardreset;
+extern uint8_t dohardreset, verbose;

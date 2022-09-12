@@ -129,8 +129,8 @@ static void _cmos_rtc_write(uint16_t port, uint8_t value) {
 
 void initcmos() {
   load_cmos();
-  
-  //register as a directly connected device
+
+  // register as a directly connected device
   set_port_read_redirector(0x80, 0xff, _cmos_rtc_read);
   set_port_write_redirector(0x80, 0xff, _cmos_rtc_write);
 }

@@ -53,9 +53,12 @@ void inputhandler() {
     char c = getchar();
     buffer = c;
     i8250.lsr = UART_LSR_THREMPTY | UART_LSR_RBRDATA;
-    if (c == 'q')
+    if (verbose)
+      printf("keypress(); // = 0x%x \n", c);
+
+    if (c == 0x18) // ^X
       running = 0;
-    if (c == 'r')
+    if (c == 0x2) // ^B
       dohardreset = 1;
   }
 }
@@ -64,12 +67,12 @@ void init8250() {
   memset((void *)&i8250, 0, sizeof(i8250));
   i8250.lcr = 0;
   i8250.lsr = UART_LSR_THREMPTY;
-  
+
   set_port_write_redirector(0x00, 0x80, &out8250);
   set_port_read_redirector(0x00, 0x80, &in8250);
 
   set_term_quiet_input();
   setvbuf(stdout, NULL, _IONBF, 0);
-  
+
   i8250enabled = 1;
 }
