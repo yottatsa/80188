@@ -1,4 +1,6 @@
 _mon:
+_warmreset:
+_ibm_stack:
 _setup:
 		say_what 0xb007		; jumped to the setup code
 		say_what 0xb105
@@ -31,8 +33,8 @@ _test_ram_words:
 _init_serial:
 _check_rtc:
 .datetime:
-.bad_cmos:
-.reset_cmos:
+.bad_rtc:
+.reset_rtc:
 .end:
 _finish:
 _putch:

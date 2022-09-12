@@ -28,6 +28,7 @@
 #include "i8259.h"
 #include "i8253.h"
 #include "modregrm.h"
+#include "i8250.h"
 
 extern struct i8253_s i8253;
 
@@ -1319,6 +1320,8 @@ void exec86 (uint32_t execloops) {
 			if (trap_toggle) {
 					intcall86 (1);
 				}
+			
+			if (i8250enabled) inputhandler();
 
 			if (tf) {
 					trap_toggle = 1;

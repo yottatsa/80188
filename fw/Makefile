@@ -7,10 +7,11 @@ dd_args = status=none
 endif
 
 all: $(targets)
+	@ls -lh $^
 
 # firmware
 fw.bin: $(sources:.S=) 
-	dd if=reset of=$@.gen bs=1024 skip=255 seek=255 $(dd_args)
+	dd if=reset of=$@.gen bs=1024 skip=248 seek=248 $(dd_args)
 	dd if=monitor of=$@.gen bs=1024 conv=notrunc $(dd_args)
 	python3 checksum.py $@.gen
 	mv $@.gen $@

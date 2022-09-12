@@ -1,7 +1,7 @@
 ; Provides interface to BIOS routines.
 
 %ifdef NOSYM
-GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _restart, _putch, _puts, _getch, _putbyte, _putdec, _version
+GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM, _warmreset, _putch, _puts, _getch, _putbyte, _putdec, _version
 
 %ifndef NOMAP
 [map all reset.map]

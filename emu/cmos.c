@@ -1,4 +1,5 @@
-// from https://github.com/bit-hack/fake86/raw/1b34ba42803e0bc594910f85f557873a1e646dec/src/fake86/cmos.c
+// from
+// https://github.com/bit-hack/fake86/raw/1b34ba42803e0bc594910f85f557873a1e646dec/src/fake86/cmos.c
 /*
   Fake86: A portable, open-source 8086 PC emulator.
   Copyright (C)2010-2013 Mike Chambers
@@ -22,49 +23,48 @@
 
 // http://bochs.sourceforge.net/techspec/CMOS-reference.txt
 
-#include <stdio.h>
+#include "ports.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "ports.h"
 
-//static bool _enable_nmi;
+// static bool _enable_nmi;
 static uint8_t _cmos_addr;
 static uint8_t cmos_ram[128];
 
 #define CMOS_FILE "cmos.bin"
 
 void load_cmos(void) {
-	FILE *binfile = NULL;
-	uint32_t readsize;
+  FILE *binfile = NULL;
+  uint32_t readsize;
 
-	binfile = fopen (CMOS_FILE, "rb");
-	if (binfile == NULL) {
-		memset((void *) &cmos_ram, 0, sizeof(cmos_ram));
-		return;
-	}
+  binfile = fopen(CMOS_FILE, "rb");
+  if (binfile == NULL) {
+    memset((void *)&cmos_ram, 0, sizeof(cmos_ram));
+    return;
+  }
 
-	fseek (binfile, 0, SEEK_SET);
-	fread ( (void *) &cmos_ram, 1, sizeof(cmos_ram), binfile);
-	fclose (binfile);
+  fseek(binfile, 0, SEEK_SET);
+  fread((void *)&cmos_ram, 1, sizeof(cmos_ram), binfile);
+  fclose(binfile);
 }
 
 void save_cmos(void) {
-	FILE *binfile = NULL;
-	uint32_t readsize;
+  FILE *binfile = NULL;
+  uint32_t readsize;
 
-	binfile = fopen (CMOS_FILE, "wb");
-	fseek (binfile, 0, SEEK_SET);
-	fwrite ( (void *) &cmos_ram, 1, sizeof(cmos_ram), binfile);
-	fclose (binfile);
+  binfile = fopen(CMOS_FILE, "wb");
+  fseek(binfile, 0, SEEK_SET);
+  fwrite((void *)&cmos_ram, 1, sizeof(cmos_ram), binfile);
+  fclose(binfile);
 }
 
-uint32_t dec2bcd_r(uint16_t dec)
-{
-	if (cmos_ram[0x0b] & (1 << 2)) 
-	return (dec);
-	else
-	return (dec) ? ((dec2bcd_r( dec / 10 ) << 4) + (dec % 10)) : 0;
+uint32_t dec2bcd_r(uint16_t dec) {
+  if (cmos_ram[0x0b] & (1 << 2))
+    return (dec);
+  else
+    return (dec) ? ((dec2bcd_r(dec / 10) << 4) + (dec % 10)) : 0;
 }
 
 static uint8_t _cmos_rtc_read(uint16_t port) {
@@ -72,26 +72,26 @@ static uint8_t _cmos_rtc_read(uint16_t port) {
   struct tm *tm = localtime(&t);
 
   switch (port & 0xf) {
-	  case 0x00: // seconds
-		return dec2bcd_r(tm->tm_sec);
-	  case 0x01: // second alarm
-	  case 0x02: // minuites
-		return dec2bcd_r(tm->tm_min);
-	  case 0x03: // minuite alarm
-	  case 0x04: // hours
-		return dec2bcd_r(tm->tm_hour);
-	  case 0x05: // hour alarm
-	  case 0x06: // day of week
-	  case 0x07: // date of month
-	  case 0x08: // month
-	  case 0x09: // year
-	    return 0x00;
-	  //case 0x0b: // status register C r/w
-	  //  return 0x06;
-	  case 0x0D: // status register D r/w
-	    return 0x80;
-	  default:
-	    return cmos_ram[(uint8_t) (port & 0xf)];
+  case 0x00: // seconds
+    return dec2bcd_r(tm->tm_sec);
+  case 0x01: // second alarm
+  case 0x02: // minuites
+    return dec2bcd_r(tm->tm_min);
+  case 0x03: // minuite alarm
+  case 0x04: // hours
+    return dec2bcd_r(tm->tm_hour);
+  case 0x05: // hour alarm
+  case 0x06: // day of week
+  case 0x07: // date of month
+  case 0x08: // month
+  case 0x09: // year
+    return 0x00;
+  // case 0x0b: // status register C r/w
+  //   return 0x06;
+  case 0x0D: // status register D r/w
+    return 0x80;
+  default:
+    return cmos_ram[(uint8_t)(port & 0xf)];
   }
 }
 
@@ -102,8 +102,7 @@ static uint8_t _cmos_read(uint16_t port) {
   case 0x71:
     if (_cmos_addr >= 0x00 && _cmos_addr <= 0x0E) {
       return _cmos_rtc_read(port);
-    }
-    else {
+    } else {
       return cmos_ram[_cmos_addr];
     }
   default:
@@ -124,16 +123,18 @@ static void _cmos_write(uint16_t port, uint8_t value) {
 }
 
 static void _cmos_rtc_write(uint16_t port, uint8_t value) {
-	cmos_ram[(uint8_t) (port & 0xf)] = value;
-	save_cmos();
+  cmos_ram[(uint8_t)(port & 0xf)] = value;
+  save_cmos();
 }
 
 void initcmos() {
   load_cmos();
+  
+  //register as a directly connected device
   set_port_read_redirector(0x80, 0xff, _cmos_rtc_read);
   set_port_write_redirector(0x80, 0xff, _cmos_rtc_write);
 }
 
-//bool cmos_nmi_enabled(void) {
-//  return _enable_nmi;
-//}
+// bool cmos_nmi_enabled(void) {
+//   return _enable_nmi;
+// }

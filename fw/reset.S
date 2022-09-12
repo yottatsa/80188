@@ -14,6 +14,21 @@ _mon:
 		jmp	_mon
 
 
+segment .ibmdata	start=0xfe000
+; IBM PC XT compatible 8KB BIOS starts here
+
+
+segment .ibmtext	start=0xfe05b	progbits
+; IBM PC XT BIOS entrypoint
+_warmreset:
+		jmp	0xffd0:0
+
+_ibm_stack:
+		mov	al, 30h 	; Set up IBM-compatible stack
+		mov	ss, ax		;   segment 0030h
+		mov	sp, 100h	;   offset  0100h
+
+
 segment .data		start=0xffc00	align=256
 ; /UMCS is configured for upper 1024K after RESET
 ; platform constants in ROM space
@@ -30,6 +45,7 @@ MAXRAM:		dw	0x80		; in KB
 segment .setup		start=0xffd00	progbits
 ; main setup code
 _setup:
+		cli
 		say_what 0xb007		; jumped to the setup code
 
 
@@ -151,19 +167,19 @@ _check_rtc:
 		in	al, dx
 		mov	bx, 0x80
 		cmp	ax, bx
-		jne	.bad_cmos
+		jne	.bad_rtc
 
 		mov	dx, RTC_CB
 		in	al, dx
-		mov	bx, 0x02
+		mov	bx, RTC_MODE
 		cmp	ax, bx
-		jne	.bad_cmos
+		jne	.bad_rtc
 
 		mov	dx, RTC_CA
 		in	al, dx
 		mov	bx, 0x21
 		cmp	ax, bx
-		jne	.bad_cmos
+		jne	.bad_rtc
 
 .datetime:
 		puts	_datetime
@@ -183,63 +199,14 @@ _check_rtc:
 		putch	0x0a
 		jmp	.end
 
-.bad_cmos:
-		puts	_bad_cmos
+.bad_rtc:
+		puts	_bad_rtc
 		putbyte	al
 		putbyte	dl
 		putch	0x0a
 
-.reset_cmos:
-		mov	dx, RTC_CB
-		mov	ax, 0xf2
-		out	dx, al
-
-		mov 	ax, 0x61
-		mov	dx, RTC_CA
-		out	dx, al
-
-		mov	dx, RTC_CC
-		in	al, dx
-
-		mov	dx, RTC_SECONDS
-		mov	ax, 0
-		out	dx, al
-
-		inc	dx ;01
-		out	dx, al
-
-		inc	dx ;02
-		out	dx, al
-
-		inc	dx ;03
-		out	dx, al
-
-		inc	dx ;04
-		out	dx, al
-
-		inc	dx ;05
-		out	dx, al
-
-		mov	ax, 1
-		inc	dx ;06
-		out	dx, al
-
-		inc	dx ;07
-		out	dx, al
-
-		inc	dx ;08
-		out	dx, al
-
-		inc	dx ;09
-		out	dx, al
-
-		mov 	ax, 0x21
-		mov	dx, RTC_CA
-		out	dx, al
-
-		mov	dx, RTC_CB
-		mov	ax, 0x02
-		out	dx, al
+.reset_rtc:
+		_rtc_reset RTC_MODE
 .end:
 
 _finish:
@@ -250,7 +217,7 @@ _finish:
 
 _board_ok:	db	"Board OK",0x0a,0x0
 _datetime:	db	"Time: ",0x0
-_bad_cmos:	db	"Bad CMOS: ",0x0
+_bad_rtc:	db	"Bad CMOS: ",0x0
 
 
 ;segment .text		start=0xfff00	align=256
@@ -332,7 +299,6 @@ segment .restart	start=0xffff0	progbits
 ; we have only 15 bytes here, so just
 ; setting the cs and doing a "long jump"
 _restart:
-		cli
 		jmp	0xffd0:0
 
 

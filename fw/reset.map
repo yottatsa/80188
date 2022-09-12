@@ -12,9 +12,11 @@ Output file:  reset
 
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
+           FE000             FE000             FE000  00000000  progbits  .ibmdata
+           FE05B             FE05B             FE067  0000000C  progbits  .ibmtext
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFF81  00000281  progbits  .setup
-           FFFF0             FFFF0             FFFF6  00000006  progbits  .restart
+           FFD00             FFD00             FFF82  00000282  progbits  .setup
+           FFFF0             FFFF0             FFFF5  00000005  progbits  .restart
            FFFF8             FFFF8            100000  00000008  progbits  .version
 
 -- Sections (detailed) --------------------------------------------------------
@@ -27,6 +29,28 @@ start:                C0000
 align:                  100
 follows:   not defined
 vstart:               C0000
+valign:    not defined
+vfollows:  not defined
+
+---- Section .ibmdata ---------------------------------------------------------
+
+class:     progbits
+length:                   0
+start:                FE000
+align:     not defined
+follows:   not defined
+vstart:               FE000
+valign:    not defined
+vfollows:  not defined
+
+---- Section .ibmtext ---------------------------------------------------------
+
+class:     progbits
+length:                   C
+start:                FE05B
+align:     not defined
+follows:   not defined
+vstart:               FE05B
 valign:    not defined
 vfollows:  not defined
 
@@ -44,7 +68,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 281
+length:                 282
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -55,7 +79,7 @@ vfollows:  not defined
 ---- Section .restart ---------------------------------------------------------
 
 class:     progbits
-length:                   6
+length:                   5
 start:                FFFF0
 align:     not defined
 follows:   not defined
@@ -133,6 +157,7 @@ Value     Name
 00000000  UART_5BITS
 00000078  BAUD_9600
 00000080  RTC_BASE
+00000002  RTC_MODE
 00000080  RTC_SECONDS
 00000082  RTC_MINUTES
 00000084  RTC_HOURS
@@ -140,6 +165,10 @@ Value     Name
 0000008B  RTC_CB
 0000008C  RTC_CC
 0000008D  RTC_CD
+00000080  RTC_CB_SET
+00000004  RTC_CB_DM_BIN
+00000002  RTC_CB_24
+00000001  RTC_CB_DSE
 
 
 ---- Section .text ------------------------------------------------------------
@@ -149,7 +178,14 @@ Real              Virtual           Name
            C0000             C0000  _serial_putch
            C0000             C0000  _serial_getch
            C0000             C0000  _serial_puts
+           C0000             C0000  _rtc_reset
            C0000             C0000  _mon
+
+---- Section .ibmtext ---------------------------------------------------------
+
+Real              Virtual           Name
+           FE05B             FE05B  _warmreset
+           FE060             FE060  _ibm_stack
 
 ---- Section .data ------------------------------------------------------------
 
@@ -166,45 +202,45 @@ Real              Virtual           Name
 
 Real              Virtual           Name
            FFD00             FFD00  _setup
-           FFD27             FFD27  _soc_failure
-           FFD30             FFD30  _soc_passed
-           FFD37             FFD37  _set_mem
-           FFD4C             FFD4C  _set_pcs
-           FFD5C             FFD5C  _test_setup_rom
-           FFD65             FFD65  _test_setup_rom.loop
-           FFD6C             FFD6C  _test_setup_rom.check
-           FFD76             FFD76  _test_setup_rom.rom_failure
-           FFD7F             FFD7F  _test_setup_rom.end
-           FFD8C             FFD8C  _set_sp
-           FFDAF             FFDAF  _test_ram_words
-           FFDDB             FFDDB  _test_ram_words.ram_failure
-           FFDDB             FFDDB  _test_ram_words.halt
-           FFDE4             FFDE4  _test_ram_words.end
-           FFDEB             FFDEB  _init_serial
-           FFE1F             FFE1F  _check_rtc
-           FFE40             FFE40  _check_rtc.datetime
-           FFE80             FFE80  _check_rtc.bad_cmos
-           FFE9D             FFE9D  _check_rtc.reset_cmos
-           FFED9             FFED9  _check_rtc.end
-           FFED9             FFED9  _finish
-           FFEDE             FFEDE  _board_ok
-           FFEE8             FFEE8  _datetime
-           FFEEF             FFEEF  _bad_cmos
-           FFEFA             FFEFA  _putch
-           FFEFF             FFEFF  ..@45.wait_empty
-           FFF0D             FFF0D  _puts
-           FFF10             FFF10  ..@46.loop
-           FFF1C             FFF1C  ..@47.wait_empty
-           FFF2A             FFF2A  ..@46.end
-           FFF2E             FFF2E  _getch
-           FFF32             FFF32  ..@48.wait_data
-           FFF3D             FFF3D  _putnibble
-           FFF4A             FFF4A  _putnibble.hex
-           FFF4D             FFF4D  _putnibble.print
-           FFF53             FFF53  _putbyte
-           FFF67             FFF67  _putdec
-           FFF6C             FFF6C  _putdec.reduceprint
-           FFF7B             FFF7B  _putdec.print
+           FFD28             FFD28  _soc_failure
+           FFD31             FFD31  _soc_passed
+           FFD38             FFD38  _set_mem
+           FFD4D             FFD4D  _set_pcs
+           FFD5D             FFD5D  _test_setup_rom
+           FFD66             FFD66  _test_setup_rom.loop
+           FFD6D             FFD6D  _test_setup_rom.check
+           FFD77             FFD77  _test_setup_rom.rom_failure
+           FFD80             FFD80  _test_setup_rom.end
+           FFD8D             FFD8D  _set_sp
+           FFDB0             FFDB0  _test_ram_words
+           FFDDC             FFDDC  _test_ram_words.ram_failure
+           FFDDC             FFDDC  _test_ram_words.halt
+           FFDE5             FFDE5  _test_ram_words.end
+           FFDEC             FFDEC  _init_serial
+           FFE20             FFE20  _check_rtc
+           FFE41             FFE41  _check_rtc.datetime
+           FFE81             FFE81  _check_rtc.bad_rtc
+           FFE9E             FFE9E  _check_rtc.reset_rtc
+           FFEDA             FFEDA  _check_rtc.end
+           FFEDA             FFEDA  _finish
+           FFEDF             FFEDF  _board_ok
+           FFEE9             FFEE9  _datetime
+           FFEF0             FFEF0  _bad_rtc
+           FFEFB             FFEFB  _putch
+           FFF00             FFF00  ..@48.wait_empty
+           FFF0E             FFF0E  _puts
+           FFF11             FFF11  ..@49.loop
+           FFF1D             FFF1D  ..@50.wait_empty
+           FFF2B             FFF2B  ..@49.end
+           FFF2F             FFF2F  _getch
+           FFF33             FFF33  ..@51.wait_data
+           FFF3E             FFF3E  _putnibble
+           FFF4B             FFF4B  _putnibble.hex
+           FFF4E             FFF4E  _putnibble.print
+           FFF54             FFF54  _putbyte
+           FFF68             FFF68  _putdec
+           FFF6D             FFF6D  _putdec.reduceprint
+           FFF7C             FFF7C  _putdec.print
 
 ---- Section .restart ---------------------------------------------------------
 

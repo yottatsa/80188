@@ -108,3 +108,5 @@ struct addrmodecache_s {
 	df = (temp16 >> 10) & 1; \
 	of = (temp16 >> 11) & 1; \
 	}
+
+extern uint8_t running;

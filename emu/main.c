@@ -21,6 +21,8 @@
    load ROM binaries, and kickstart the CPU emulator. */
 
 #include "config.h"
+#include "i8250.h"
+#include "x186.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -118,8 +120,6 @@ void init8253();
 void init8259();
 void init8237();
 extern void initcmos();
-extern void init8250();
-extern void initx186();
 extern void initVideoPorts();
 extern void killaudio();
 extern void initsermouse (uint16_t baseport, uint8_t irq);
@@ -159,14 +159,14 @@ void inithardware() {
 	printf ("  - Intel 8250 USART: ");
 	init8250();
 	printf ("OK\n");
-	printf ("  - CMOS: ");
-	initcmos();
-	printf ("OK\n");
 	printf ("  - Intel 8253 timer: ");
 	init8253();
 	printf ("OK\n");
 	printf ("  - Intel 8259 interrupt controller: ");
 	init8259();
+	printf ("OK\n");
+	printf ("  - DS1285 real-time clock: ");
+	initcmos();
 	printf ("OK\n");
 	inittiming();
 }
