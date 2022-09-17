@@ -1,3 +1,6 @@
 [submodule "gal/GALasm"]
 	path = gal/GALasm
 	url = https://github.com/daveho/GALasm
+[submodule "fw/cosmopolitan"]
+	path = fw/cosmopolitan
+	url = https://github.com/jart/cosmopolitan

@@ -12,6 +12,11 @@ fw/*.glob
 fw/reset
 fw/monitor
 
+fw/blinkenlights/*.o
+fw/blinkenlights/*.a
+fw/blinkenlights/*.lds
+fw/blinkenlights/blinkenlights.com.dbg
+
 gal/*.chp
 gal/*.fus
 gal/*.pin
