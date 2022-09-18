@@ -16,6 +16,7 @@ fw/blinkenlights/*.o
 fw/blinkenlights/*.a
 fw/blinkenlights/*.lds
 fw/blinkenlights/blinkenlights.com.dbg
+fw/blinkenlights/hello.elf
 
 gal/*.chp
 gal/*.fus

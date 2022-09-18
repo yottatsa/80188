@@ -1,3 +1,6 @@
+MODE := amalgamation
+
+ifeq ($(MODE), amalgamation)
 COSMO = cosmopolitan.h \
 	ape.lds \
 	crt.o \
@@ -95,6 +98,7 @@ $(COSMODIST):
 $(COSMO): $(COSMODIST)
 	unzip -o $^
 	touch $(COSMO)
+endif
 
 ifeq ($(MODE), prebuilt)
 blinkenlights.com:
