@@ -12,9 +12,14 @@ fw/*.glob
 fw/reset
 fw/monitor
 
-fw/blinkenlights/*.o
-fw/blinkenlights/*.a
-fw/blinkenlights/*.lds
+fw/blinkenlights/o
+fw/blinkenlights/cosmopolitan.h
+fw/blinkenlights/ape.lds
+fw/blinkenlights/crt.o
+fw/blinkenlights/ape.o
+fw/blinkenlights/ape-no-modify-self.o
+fw/blinkenlights/cosmopolitan.a
+fw/blinkenlights/ape-copy-self.o
 fw/blinkenlights/blinkenlights.com.dbg
 fw/blinkenlights/hello.elf
 

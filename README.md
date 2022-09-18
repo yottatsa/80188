@@ -3,9 +3,10 @@
 * testing and firmware development: r1
 * hardware development: r2
 
-To emulate
+To run or debug
 
-    make run
+    make run  # runs the BIOS in fake86
+    make step # runs the BIOS in the blinkenlights
 
 To program
 
@@ -30,6 +31,8 @@ To connect
 * AT-compatible RTC
 
 ## Notes
+
+Uses [blinkenlights](https://justine.lol/blinkenlights/) and [fake86](https://sourceforge.net/projects/fake86/) for emulation.
 
 ### r1
 

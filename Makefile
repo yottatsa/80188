@@ -20,7 +20,7 @@ run: fw
 	make -C emu run
 
 step: fw blinkenlights
-	bash -c 'cd fw/blinkenlights; ./blinkenlights.com -rt ../fw.bin'
+	bash -c 'cd fw/blinkenlights; ./blinkenlights.com -rtR ../fw.bin'
 	
 
 .PHONY: all fw gal blinkenlights clean run
