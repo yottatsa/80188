@@ -1,6 +1,5 @@
 MODE := amalgamation
 
-ifeq ($(MODE), amalgamation)
 COSMO = cosmopolitan.h \
 	ape.lds \
 	crt.o \
@@ -10,7 +9,19 @@ COSMO = cosmopolitan.h \
 	ape-copy-self.o
 COSMODIST = cosmopolitan-amalgamation-2.0.1.zip
 
-BLINKENLIGHTS = ../cosmopolitan/tool/build/blinkenlights.c \
+ifeq ($(MODE), amalgamation)
+
+# original cosmopolitan-amalgamation flags
+CC = x86_64-elf-gcc
+GCC = x86_64-elf-gcc
+OBJCOPY = x86_64-elf-objcopy
+CFLAGS = -g -Os -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone \
+ -fno-omit-frame-pointer -pg -mnop-mcount -mno-tls-direct-seg-refs -gdwarf-4
+LDFLAGS = -fuse-ld=bfd -Wl,-T,ape.lds -Wl,--gc-sections \
+   crt.o ape-no-modify-self.o cosmopolitan.a
+INCLUDES = -include cosmopolitan.h 
+
+sources = ../cosmopolitan/tool/build/blinkenlights.c \
 	../cosmopolitan/tool/build/lib/machine.c \
 	../cosmopolitan/tool/build/lib/pty.c \
 	../cosmopolitan/tool/build/lib/throw.c \
@@ -39,55 +50,56 @@ BLINKENLIGHTS = ../cosmopolitan/tool/build/blinkenlights.c \
 	../cosmopolitan/tool/build/lib/signal.c \
 	../cosmopolitan/tool/build/lib/xlat.c \
 	../cosmopolitan/tool/build/lib/xlaterrno.c \
-	errnos.o \
-	../cosmopolitan/tool//build/lib/fds.c \
-	../cosmopolitan/tool//build/lib/iovs.c \
-	../cosmopolitan/tool//build/lib/string.c \
-	../cosmopolitan/tool//build/lib/ioports.c \
-	../cosmopolitan/tool//build/lib/clmul.c \
-	../cosmopolitan/tool//build/lib/bitscan.c \
-	../cosmopolitan/tool//build/lib/high.c \
-	../cosmopolitan/tool//build/lib/dis.c \
-	../cosmopolitan/tool//build/lib/diself.c \
-	../cosmopolitan/tool//build/lib/disarg.c \
-	../cosmopolitan/tool//build/lib/disinst.c \
-	../cosmopolitan/tool//build/lib/disspec.c \
-	../cosmopolitan/tool//build/lib/demangle.c \
-	../cosmopolitan/tool//build/lib/buffer.c \
-	../cosmopolitan/tool//build/lib/stats.c \
-	../cosmopolitan/tool//build/lib/loader.c \
-	../cosmopolitan/tool//build/lib/argv.c \
-	../cosmopolitan/tool//build/lib/xmmtype.c \
-	../cosmopolitan/tool//build/lib/message.c \
-	../cosmopolitan/tool//build/lib/lines.c \
-	../cosmopolitan/tool//build/lib/instruction.c \
-	../cosmopolitan/tool//build/lib/pml4tfmt.c \
-	../cosmopolitan/tool//build/lib/debug.c \
-	../cosmopolitan/tool//build/lib/cga.c \
-	../cosmopolitan/tool//build/lib/panel.c \
-	../cosmopolitan/tool//build/lib/mda.c \
-	../cosmopolitan/tool//build/lib/pml4t.c \
-	../cosmopolitan//dsp/scale/cdecimate2xuint8x8.c
-	
+	../cosmopolitan/tool/build/lib/errnos.S \
+	../cosmopolitan/tool/build/lib/fds.c \
+	../cosmopolitan/tool/build/lib/iovs.c \
+	../cosmopolitan/tool/build/lib/string.c \
+	../cosmopolitan/tool/build/lib/ioports.c \
+	../cosmopolitan/tool/build/lib/clmul.c \
+	../cosmopolitan/tool/build/lib/bitscan.c \
+	../cosmopolitan/tool/build/lib/high.c \
+	../cosmopolitan/tool/build/lib/dis.c \
+	../cosmopolitan/tool/build/lib/diself.c \
+	../cosmopolitan/tool/build/lib/disarg.c \
+	../cosmopolitan/tool/build/lib/disinst.c \
+	../cosmopolitan/tool/build/lib/disspec.c \
+	../cosmopolitan/tool/build/lib/demangle.c \
+	../cosmopolitan/tool/build/lib/buffer.c \
+	../cosmopolitan/tool/build/lib/stats.c \
+	../cosmopolitan/tool/build/lib/loader.c \
+	../cosmopolitan/tool/build/lib/argv.c \
+	../cosmopolitan/tool/build/lib/xmmtype.c \
+	../cosmopolitan/tool/build/lib/message.c \
+	../cosmopolitan/tool/build/lib/lines.c \
+	../cosmopolitan/tool/build/lib/instruction.c \
+	../cosmopolitan/tool/build/lib/pml4tfmt.c \
+	../cosmopolitan/tool/build/lib/debug.c \
+	../cosmopolitan/tool/build/lib/cga.c \
+	../cosmopolitan/tool/build/lib/panel.c \
+	../cosmopolitan/tool/build/lib/mda.c \
+	../cosmopolitan/tool/build/lib/pml4t.c \
+	../cosmopolitan/dsp/scale/cdecimate2xuint8x8.c
 
-CC = x86_64-elf-gcc
-GCC = x86_64-elf-gcc
-OBJCOPY = x86_64-elf-objcopy
-CFLAGS = -g -Os -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone \
- -fno-omit-frame-pointer -pg -mnop-mcount -mno-tls-direct-seg-refs -gdwarf-4
-INCLUDES = -include cosmopolitan.h -include adaptor.h
-LDFLAGS = -fuse-ld=bfd -Wl,-T,ape.lds -Wl,--gc-sections \
-   crt.o ape-no-modify-self.o cosmopolitan.a
+dirsubst = $(patsubst ../cosmopolitan/%,o/%,$(1))
+objects = $(call dirsubst,$(patsubst %.S,%.o,$(patsubst %.c,%.o,$(sources))))
+odirs = $(shell echo $(dir $(objects)) | tr " " "\n" | sort -u | tr "\n" " ")
 
+INCLUDES += -include adaptor.h
 CFLAGS += -I. -Icosmopolitan -I../cosmopolitan
 
-all: blinkenlights.com
+all: $(odirs) blinkenlights.com
 
-errnos.o: ../cosmopolitan/tool/build/lib/errnos.S
-	$(CC) --compile $(CFLAGS) $^
+$(odirs):
+	mkdir -p $@
 
-blinkenlights.com.dbg: $(COSMO) $(BLINKENLIGHTS)
-	$(CC) -o $@ $(CFLAGS) $(BLINKENLIGHTS) $(INCLUDES) $(LDFLAGS) 
+o/%.o: ../cosmopolitan/%.S 
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+o/%.o: ../cosmopolitan/%.c cosmopolitan.h adaptor.h
+	$(CC) -c -o $@ $(CFLAGS) $< $(INCLUDES)
+
+blinkenlights.com.dbg: $(objects) $(COSMO)
+	$(CC) -o $@ $(CFLAGS) $(objects) $(INCLUDES) $(LDFLAGS)
 
 blinkenlights.com: blinkenlights.com.dbg
 	$(OBJCOPY) -S -O binary $^ $@
@@ -107,6 +119,9 @@ blinkenlights.com:
 endif
 
 clean:
-	rm -f blinkenlights.com errnos.o
+	rm -f $(objects) blinkenlights.com.dbg blinkenlights.com
+	
+reallyclean: clean
+	rm -f $(COSMO) $(COSMODIST)
 
-.PHONY: all clean
+.PHONY: all clean reallyclean

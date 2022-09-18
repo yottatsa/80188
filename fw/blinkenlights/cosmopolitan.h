@@ -12012,11 +12012,11 @@ COSMOPOLITAN_C_END_
 #define COSMOPOLITAN_LIBC_INTRIN_PSHUFD_H_
 #if !(__ASSEMBLER__ + __LINKER__ + 0)
 COSMOPOLITAN_C_START_
-/*
+
 void pshufd(int32_t[4], const int32_t[4], uint8_t);
 
 #define pshufd(A, B, I) INTRIN_SSEVEX_X_X_I_(pshufd, SSE2, "pshufd", A, B, I)
-*/
+
 COSMOPOLITAN_C_END_
 #endif /* !(__ASSEMBLER__ + __LINKER__ + 0) */
 
@@ -12026,11 +12026,11 @@ COSMOPOLITAN_C_END_
 #define COSMOPOLITAN_LIBC_INTRIN_PSHUFHW_H_
 #if !(__ASSEMBLER__ + __LINKER__ + 0)
 COSMOPOLITAN_C_START_
-/*
+
 void pshufhw(int16_t[8], const int16_t[8], uint8_t);
 
 #define pshufhw(A, B, I) INTRIN_SSEVEX_X_X_I_(pshufhw, SSE2, "pshufhw", A, B, I)
-*/
+
 COSMOPOLITAN_C_END_
 #endif /* !(__ASSEMBLER__ + __LINKER__ + 0) */
 
@@ -12040,11 +12040,10 @@ COSMOPOLITAN_C_END_
 #define COSMOPOLITAN_LIBC_INTRIN_PSHUFLW_H_
 #if !(__ASSEMBLER__ + __LINKER__ + 0)
 COSMOPOLITAN_C_START_
-/*
+
 void pshuflw(int16_t[8], const int16_t[8], uint8_t);
 
 #define pshuflw(A, B, I) INTRIN_SSEVEX_X_X_I_(pshuflw, SSE2, "pshuflw", A, B, I)
-*/
 
 COSMOPOLITAN_C_END_
 #endif /* !(__ASSEMBLER__ + __LINKER__ + 0) */
@@ -12055,9 +12054,9 @@ COSMOPOLITAN_C_END_
 #define COSMOPOLITAN_LIBC_INTRIN_PSHUFW_H_
 #if !(__ASSEMBLER__ + __LINKER__ + 0)
 COSMOPOLITAN_C_START_
-/*
+
 void pshufw(int16_t[4], const int16_t[4], uint8_t);
-*/
+
 COSMOPOLITAN_C_END_
 #endif /* !(__ASSEMBLER__ + __LINKER__ + 0) */
 
@@ -12708,9 +12707,7 @@ forceinline void *repstosb(void *dest, unsigned char al, size_t cx) {
  * @see arch_prctl()
  * @see pushpop()
  */
-/*
 #define fs(MEM) __peek("fs", MEM)
-*/
 #define gs(MEM) __peek("gs", MEM)
 
 #define __peek(SEGMENT, ADDRESS)                                  \
@@ -27120,7 +27117,7 @@ typedef void (*NtTimerapcroutine)(void *lpArgToCompletionRoutine,
 typedef void (*NtWaitOrTimerCallback)(void *lpParameter,
                                       bool32 TimerOrWaitFired);
 
-//void Sleep(uint32_t dwMilliseconds);
+void Sleep(uint32_t dwMilliseconds);
 uint32_t SleepEx(uint32_t dwMilliseconds, bool32 bAlertable);
 
 void GetSystemTime(struct NtSystemTime *lpSystemTime);
@@ -27428,7 +27425,7 @@ bool32 SetWindowPlacement(int64_t hWnd,
 
 int64_t GetCursor(void);
 int64_t SetCursor(int64_t hCursor);
-//int32_t ShowCursor(bool32 bShow);
+int32_t ShowCursor(bool32 bShow);
 int64_t LoadCursor(int64_t opt_hInstance, const char16_t *lpCursorNameOrIdc);
 
 bool32 IsWindow(int64_t hWnd);

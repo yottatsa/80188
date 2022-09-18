@@ -6,3 +6,20 @@
 #define _rounddown2pow rounddown2pow
 #define _bsr bsr
 #include "libc/macros.internal.h"
+
+#undef roundup
+#undef roundup
+#undef CTRL
+#undef BLUE2
+#undef BLUE1
+#undef BLUE1
+#undef RED2
+#undef GREEN
+#undef RED
+
+#undef pshufw
+#undef pshufd
+#undef pshuflw
+#undef pshufhw
+
+#undef fs
