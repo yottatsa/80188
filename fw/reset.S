@@ -325,6 +325,6 @@ _restart:
 		jmp	0xffd0:0
 
 
-segment .version
 ; version and padding
-_version:	db	"r0.1v0.4"
+		db	0, 0
+_version:	db	"r0.1v0.4",0x0
