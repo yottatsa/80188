@@ -28,13 +28,17 @@ GLOBAL _warmreset, _putch, _puts, _getch, _putbyte, _putdec, _version
 %endmacro
 
 %macro	puts 1
+	push	bx
 	mov 	bx, %1
 	__callfar _puts
+	pop	bx
 %endmacro
 
 %macro	putch 1
+	push	bx
 	mov 	bl, %1
 	__callfar _putch
+	pop	bx
 %endmacro
 
 %macro	getch 0
@@ -42,11 +46,15 @@ GLOBAL _warmreset, _putch, _puts, _getch, _putbyte, _putdec, _version
 %endmacro
 
 %macro	putbyte	1
+	push	bx
 	mov 	bl, %1
 	__callfar _putbyte
+	pop	bx
 %endmacro
 
 %macro	putdec	1
+	push	bx
 	mov 	bl, %1
 	__callfar _putdec
+	pop	bx
 %endmacro

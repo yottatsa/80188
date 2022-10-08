@@ -13,11 +13,10 @@ Output file:  reset
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
            FE000             FE000             FE000  00000000  progbits  .ibmdata
-           FE05B             FE05B             FE060  00000005  progbits  .ibmtext
+           FE05B             FE05B             FE0FC  000000A1  progbits  .ibmtext
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFFE8  000002E8  progbits  .setup
-           FFFF0             FFFF0             FFFF5  00000005  progbits  .restart
-           FFFF8             FFFF8            100000  00000008  progbits  .version
+           FFD00             FFD00             FFF72  00000272  progbits  .setup
+           FFFF0             FFFF0            100000  00000010  progbits  .restart
 
 -- Sections (detailed) --------------------------------------------------------
 
@@ -46,7 +45,7 @@ vfollows:  not defined
 ---- Section .ibmtext ---------------------------------------------------------
 
 class:     progbits
-length:                   5
+length:                  A1
 start:                FE05B
 align:     not defined
 follows:   not defined
@@ -68,7 +67,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 2E8
+length:                 272
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -79,22 +78,11 @@ vfollows:  not defined
 ---- Section .restart ---------------------------------------------------------
 
 class:     progbits
-length:                   5
+length:                  10
 start:                FFFF0
 align:     not defined
 follows:   not defined
 vstart:               FFFF0
-valign:    not defined
-vfollows:  not defined
-
----- Section .version ---------------------------------------------------------
-
-class:     progbits
-length:                   8
-start:                FFFF8
-align:                    4
-follows:   not defined
-vstart:               FFFF8
 valign:    not defined
 vfollows:  not defined
 
@@ -189,6 +177,23 @@ Real              Virtual           Name
 
 Real              Virtual           Name
            FE05B             FE05B  _warmreset
+           FE060             FE060  _putch
+           FE065             FE065  ..@6.wait_empty
+           FE073             FE073  _puts
+           FE076             FE076  ..@7.loop
+           FE082             FE082  ..@8.wait_empty
+           FE090             FE090  ..@7.end
+           FE094             FE094  _getch
+           FE098             FE098  ..@9.wait_data
+           FE0A3             FE0A3  _putnibble
+           FE0B0             FE0B0  _putnibble.hex
+           FE0B3             FE0B3  _putnibble.print
+           FE0B9             FE0B9  _putbyte
+           FE0CD             FE0CD  _putdec
+           FE0D2             FE0D2  _putdec.reduceprint
+           FE0E1             FE0E1  _putdec.print
+           FE0E7             FE0E7  _putdec.leadzero
+           FE0EC             FE0EC  ..@10.wait_empty
 
 ---- Section .data ------------------------------------------------------------
 
@@ -220,40 +225,19 @@ Real              Virtual           Name
            FFDDC             FFDDC  _test_ram_words.halt
            FFDE5             FFDE5  _test_ram_words.end
            FFDEC             FFDEC  _init_serial
-           FFE20             FFE20  _check_rtc
-           FFE4A             FFE4A  _check_rtc.datetime
-           FFECB             FFECB  _check_rtc.bad_rtc
-           FFEE8             FFEE8  _check_rtc.reset_rtc
-           FFF2B             FFF2B  _check_rtc.end
-           FFF2B             FFF2B  _finish
-           FFF30             FFF30  _board_ok
-           FFF3A             FFF3A  _datetime
-           FFF41             FFF41  _bad_rtc
-           FFF4C             FFF4C  _putch
-           FFF51             FFF51  ..@70.wait_empty
-           FFF5F             FFF5F  _puts
-           FFF62             FFF62  ..@71.loop
-           FFF6E             FFF6E  ..@72.wait_empty
-           FFF7C             FFF7C  ..@71.end
-           FFF80             FFF80  _getch
-           FFF84             FFF84  ..@73.wait_data
-           FFF8F             FFF8F  _putnibble
-           FFF9C             FFF9C  _putnibble.hex
-           FFF9F             FFF9F  _putnibble.print
-           FFFA5             FFFA5  _putbyte
-           FFFB9             FFFB9  _putdec
-           FFFBE             FFFBE  _putdec.reduceprint
-           FFFCD             FFFCD  _putdec.print
-           FFFD3             FFFD3  _putdec.leadzero
-           FFFD8             FFFD8  ..@74.wait_empty
+           FFE22             FFE22  _check_rtc
+           FFE4C             FFE4C  _check_rtc.datetime
+           FFEE9             FFEE9  _check_rtc.bad_rtc
+           FFF0E             FFF0E  _check_rtc.reset_rtc
+           FFF51             FFF51  _check_rtc.end
+           FFF51             FFF51  _finish
+           FFF56             FFF56  _board_ok
+           FFF60             FFF60  _datetime
+           FFF67             FFF67  _bad_rtc
 
 ---- Section .restart ---------------------------------------------------------
 
 Real              Virtual           Name
            FFFF0             FFFF0  _restart
-
----- Section .version ---------------------------------------------------------
-
-Real              Virtual           Name
-           FFFF8             FFFF8  _version
+           FFFF7             FFFF7  _version
 

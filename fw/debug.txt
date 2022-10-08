@@ -1,5 +1,16 @@
 _mon:
 _warmreset:
+_putch:
+_puts:
+_getch:
+_putnibble:
+.hex:
+.print:
+_putbyte:
+_putdec:
+.reduceprint:
+.print:
+.leadzero:
 _setup:
 		say_what 0xb007		; jumped to the setup code
 		say_what 0xb105
@@ -36,15 +47,4 @@ _check_rtc:
 .reset_rtc:
 .end:
 _finish:
-_putch:
-_puts:
-_getch:
-_putnibble:
-.hex:
-.print:
-_putbyte:
-_putdec:
-.reduceprint:
-.print:
-.leadzero:
 _restart:

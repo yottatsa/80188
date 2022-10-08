@@ -24,6 +24,84 @@ _warmreset:
 		jmp	0xffd0:0
 
 
+;segment .text		start=0xfe06.....
+; Nano-BIOS functions
+_putch:
+;; write the byte from BL on console
+		push	ax
+		push	dx
+		_serial_putch bx
+		pop	dx
+		pop	ax
+		retf
+
+_puts:
+;; write the null-terminated string from [ds:bx]
+		push	ax
+		push	cx
+		push	dx
+		__serial_puts
+		pop	dx
+		pop	cx
+		pop	ax
+		retf
+
+_getch:
+;; return the byte in AL
+		push	dx
+		_serial_getch al
+		pop	dx
+		retf
+
+_putnibble:
+;; print a nibble from BL
+		and	bl, 0xf
+		cmp	bl, 9
+		jg	.hex
+		add	bl, '0'
+		jmp	.print
+.hex:
+		add	bl, 'a' - 10
+.print:
+		call	0xf000:_putch
+		retf
+
+_putbyte:
+;; print a byte in hex from BL
+		push 	ax
+		mov	al, bl
+		shr	bl, 4
+		call	0xf000:_putnibble
+		mov	bl, al
+		call	0xf000:_putnibble
+		pop	ax
+		retf
+
+_putdec:
+;; print a two digits decimal number from BL
+;; todo CL digits number with leading zeros
+		cmp	bl, 9
+		jng	.leadzero
+.reduceprint:
+		push	ax
+		mov	bl, 10
+		div	bl
+		mov	bl, al
+		call	0xf000:_putnibble
+		mov	bl, ah
+		pop	ax
+.print:
+		call	0xf000:_putnibble
+		retf
+.leadzero:
+		push	ax
+		push	dx
+		_serial_putch '0'
+		pop	dx
+		pop	ax
+		jmp	.print
+		
+
 segment .data		start=0xffc00	align=256
 ; /UMCS is configured for upper 1024K after RESET
 ; platform constants in ROM space
@@ -238,83 +316,6 @@ _datetime:	db	"Time: ",0x0
 _bad_rtc:	db	"Bad CMOS: ",0x0
 
 
-;segment .text		start=0xfff00	align=256
-; BIOS functions
-_putch:
-;; write the byte from BL on console
-		push	ax
-		push	dx
-		_serial_putch bx
-		pop	dx
-		pop	ax
-		retf
-
-_puts:
-;; write the null-terminated string from [ds:bx]
-		push	ax
-		push	cx
-		push	dx
-		__serial_puts
-		pop	dx
-		pop	cx
-		pop	ax
-		retf
-
-_getch:
-;; return the byte in AL
-		push	dx
-		_serial_getch al
-		pop	dx
-		retf
-
-_putnibble:
-;; print a nibble from BL
-		and	bl, 0xf
-		cmp	bl, 9
-		jg	.hex
-		add	bl, '0'
-		jmp	.print
-.hex:
-		add	bl, 'a' - 10
-.print:
-		call	0xf000:_putch
-		retf
-
-_putbyte:
-;; print a byte in hex from BL
-		push 	ax
-		mov	al, bl
-		shr	bl, 4
-		call	0xf000:_putnibble
-		mov	bl, al
-		call	0xf000:_putnibble
-		pop	ax
-		retf
-
-_putdec:
-;; print a two digits decimal number from BL
-;; todo CL digits number with leading zeros
-		cmp	bl, 9
-		jng	.leadzero
-.reduceprint:
-		push	ax
-		mov	bl, 10
-		div	bl
-		mov	bl, al
-		call	0xf000:_putnibble
-		mov	bl, ah
-		pop	ax
-.print:
-		call	0xf000:_putnibble
-		retf
-.leadzero:
-		push	ax
-		push	dx
-		_serial_putch '0'
-		pop	dx
-		pop	ax
-		jmp	.print
-
 
 segment .restart	start=0xffff0	progbits
 ; 80188 entrypoint
@@ -327,4 +328,4 @@ _restart:
 
 ; version and padding
 		db	0, 0
-_version:	db	"r0.1v0.4",0x0
+_version:	db	"r0.1v0.5", 0x0
