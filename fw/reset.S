@@ -23,11 +23,6 @@ segment .ibmtext	start=0xfe05b	progbits
 _warmreset:
 		jmp	0xffd0:0
 
-_ibm_stack:
-		mov	al, 30h 	; Set up IBM-compatible stack
-		mov	ss, ax		;   segment 0030h
-		mov	sp, 100h	;   offset  0100h
-
 
 segment .data		start=0xffc00	align=256
 ; /UMCS is configured for upper 1024K after RESET
@@ -40,6 +35,8 @@ PACS:		dw	PACS_0x00000_W3
 MMCS:		dw	0x0000 		; not handled yet
 MPCS:		dw	MPCS_DEF
 MAXRAM:		dw	0x80		; in KB
+
+GLOBAL UMCS, LMCS, PACS, MMCS, MPCS, MAXRAM
 
 
 segment .setup		start=0xffd00	progbits
@@ -184,15 +181,34 @@ _check_rtc:
 .datetime:
 		puts	_datetime
 
+		mov	dx, RTC_CENTURY
+		in	al, dx
+		_putrtc	al
+
+		mov	dx, RTC_YEAR
+		in	al, dx
+		_putrtc	al
+		putch	"-"
+		
+		mov	dx, RTC_MONTH
+		in	al, dx
+		_putrtc	al
+		putch	"-"
+		
+		mov	dx, RTC_DATE
+		in	al, dx
+		_putrtc	al
+		putch	"_"
+
 		mov	dx, RTC_HOURS
 		in	al, dx
-
 		_putrtc	al
+		
 		putch	":"
 		mov	dx, RTC_MINUTES
 		in	al, dx
-
 		_putrtc	al
+		
 		putch	":"
 		mov	dx, RTC_SECONDS
 		in	al, dx

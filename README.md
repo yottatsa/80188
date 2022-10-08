@@ -7,14 +7,12 @@ To emulate
 
     make run
 
-To program
+To program and connect
 
-    make fw gal
+    make all
     minipro -p SST39SF020A@PLCC32 --write fw/fw.bin
     minipro -p ... --write gal/....pld
-
-To connect
-
+    ...
     picocom -q --baud 9600 --imap lfcrlf --omap crlf [serial device]
 
 ## Configuration

@@ -1,6 +1,10 @@
 RTC_SECONDS	equ	 RTC_BASE
 RTC_MINUTES	equ	(RTC_BASE+2)
 RTC_HOURS	equ	(RTC_BASE+4)
+RTC_DATE	equ	(RTC_BASE+7)
+RTC_MONTH	equ	(RTC_BASE+8)
+RTC_YEAR	equ	(RTC_BASE+9)
+RTC_CENTURY	equ	(RTC_BASE+0x32)
 
 RTC_CA		equ	(RTC_BASE+0x0a)
 RTC_CB		equ	(RTC_BASE+0x0b)
@@ -56,6 +60,17 @@ _rtc_reset:
 
 		inc	dx ;09
 		out	dx, al
+
+%ifndef PRE
+; this won't work on preprocessing
+%if RTC_MODE & RTC_CB_DM_BIN
+		mov 	ax, 20
+%else
+		mov 	ax, 0x20
+%endif
+		mov	dx, RTC_CENTURY
+		out	dx, al
+%endif
 
 		mov 	ax, 0x21
 		mov	dx, RTC_CA

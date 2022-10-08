@@ -1,6 +1,5 @@
 _mon:
 _warmreset:
-_ibm_stack:
 _setup:
 		say_what 0xb007		; jumped to the setup code
 		say_what 0xb105

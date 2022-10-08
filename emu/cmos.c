@@ -23,6 +23,7 @@
 
 // http://bochs.sourceforge.net/techspec/CMOS-reference.txt
 
+#include "main.h"
 #include "ports.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -71,7 +72,7 @@ static uint8_t _cmos_rtc_read(uint16_t port) {
   time_t t = time(NULL);
   struct tm *tm = localtime(&t);
 
-  switch (port & 0xf) {
+  switch (port & 0x7f) {
   case 0x00: // seconds
     return dec2bcd_r(tm->tm_sec);
   case 0x01: // second alarm
@@ -82,16 +83,19 @@ static uint8_t _cmos_rtc_read(uint16_t port) {
     return dec2bcd_r(tm->tm_hour);
   case 0x05: // hour alarm
   case 0x06: // day of week
+    return dec2bcd_r(tm->tm_wday + 1);
   case 0x07: // date of month
+    return dec2bcd_r(tm->tm_mday);
   case 0x08: // month
+    return dec2bcd_r(tm->tm_mon + 1);
   case 0x09: // year
-    return 0x00;
+    return dec2bcd_r(tm->tm_year % 100);
   // case 0x0b: // status register C r/w
   //   return 0x06;
   case 0x0D: // status register D r/w
     return 0x80;
   default:
-    return cmos_ram[(uint8_t)(port & 0xf)];
+    return cmos_ram[(uint8_t)(port & 0x7f)];
   }
 }
 
@@ -123,7 +127,9 @@ static void _cmos_write(uint16_t port, uint8_t value) {
 }
 
 static void _cmos_rtc_write(uint16_t port, uint8_t value) {
-  cmos_ram[(uint8_t)(port & 0xf)] = value;
+  if (verbose)
+    printf("cmos_write(%x, %x);\n", (uint8_t)(port & 0x7f), value);
+  cmos_ram[(uint8_t)(port & 0x7f)] = value;
   save_cmos();
 }
 
