@@ -3,8 +3,9 @@ USE16
 
 %include "reset.inc"
 
-segment .bss
 
+segment .bss
+; not a real bss, since it's compiled as flat
 _ES equ 0x0000
 _SI equ 0x0002
 _INPUTNUM equ 0x0004
@@ -20,8 +21,12 @@ _mon:
 	puts	(_version & 0xffff)
 	mov	ax, 0xc000
 	mov 	ds, ax
-	puts	_monitor_name
+	puts	.name
+	jmp	_init
+
+.name:	db	" memory monitor",0x0
 	
+
 _init:
 	mov	ax, 0x0000
 	mov	ds, ax
@@ -32,6 +37,7 @@ _init:
 _mainloop:
 	
 _status:
+; prints current segment and address, the cursor
 	putch	0x0a
 	mov	ax, [_ES]
 	putbyte	ah
@@ -42,75 +48,118 @@ _status:
 	putbyte	al
 	putch	">"
 	
-_input_init:
+_input:
+; Input format is
+; ([0-9A-Fa-f]{0,4})([<cmd>]{0,1})([0-9A-Fa-f]{0,4}}
+; where the first group is the address to set to the address cursor,
+; second group is the command,
+; and third group is the argument.
+;
+; All three are optional:
+; absence of command repeat last command (peek-and-step by default),
+; command without address uses current address from the cursor,
+; arguments are only needed for certain commands.
+
+.init:
 	mov	ax, 0
 	mov	[_INPUTPOS], al
 	mov	[_INPUTNUM], ax
 	
-_read:
+.read:
 	getch
 	
 	mov	bx, [_INPUTPOS]
 	cmp	bl, 3
-	ja	_input_cmd
-	jmp	_input_dec
+	ja	.cmd
+	jmp	.dec
 
-_procnum:
+.procnum:
 	inc	byte [_INPUTPOS]
 	
-_echo:
+.echo:
 	putch	al
-	jmp	_read
+	jmp	.read
 	
-_input_dec:
-	cmp	al, '0'
-	jb	_input_hex
-	cmp	al, '9'
-	ja	_input_hex
-	jmp 	_procnum
+.dec:
+	cmp	al, "0"
+	jb	.hex
+	cmp	al, "9"
+	ja	.hex
+	jmp 	.procnum
 	
-_input_hex:
-	cmp	al, 'A'
-	jb	_input_hex2
-	cmp	al, 'F'
-	ja	_input_hex2
-	jmp 	_procnum
+.hex:
+	cmp	al, "A"
+	jb	.hex2
+	cmp	al, "F"
+	ja	.hex2
+	jmp 	.procnum
 	
-_input_hex2:
-	cmp	al, 'a'
-	jb	_input_cmd
-	cmp	al, 'f'
-	ja	_input_cmd
-	jmp 	_procnum
+.hex2:
+	cmp	al, "a"
+	jb	.cmd
+	cmp	al, "f"
+	ja	.cmd
+	jmp 	.procnum
 
-_input_cmd:
-	cmp	al, 'n'
+.cmd:
+	cmp	al, "n"
 	je	_mainloop
-	cmp	al, 'R'
+	cmp	al, "R"
 	je	_mon
 	cmp	al, 0xa
 	je 	_do_last
 	cmp	al, 0x20
 	je 	_do_last
 
-	; read keycode part
-	;putch	'\'
-	;putbyte	al
-	;jmp	_mainloop
+;	; read keycode part
+;	putch	"\\"
+;	putbyte	al
+;	jmp	_mainloop
 	
-	jmp	_read
+	jmp	.read
 	
 _do_last:
+; <ENTER> and <SPACE> repeats last command
+
 _do_peek:
+; '?' prints a word from the cursor and increment the cursor
+; maybe optional argument for specifying how much to print?
 	putch	0x0a
 	;mov	ax, [_INPUTNUM]
 	;mov	si, ax
 	mov	si, [_SI]
 	mov	ax, [es:si]
+	putch	":"
 	putbyte	ah
 	putbyte	al
 	inc	word [_SI]
 	inc	word [_SI]
 	jmp 	_mainloop
+
+_do_poke:
+; ':' writes a byte or word to the cursor and increment the cursor
+; maybe write until <ENTER> or <SPACE>?
 	
-_monitor_name:	db	" memory monitor",0x0
+_do_addr:
+; '&' returns absolute address
+
+_do_seg:
+; '#' sets segment from the argument
+; e.g. '0#0<ENTER>' will set the cursor to 0000:0000
+
+_do_jump:
+; '%' long jump to the segment:address
+
+_do_print;
+; '.' prints null-terminated string
+
+; indirect operations
+; dunno if needed, might be useful
+_do_ipeek:
+; '*' prints a word from the address that stored in the current address
+
+_do_input:
+; 'i'/'I' reads byte/word from the port
+
+_do_output:
+; 'o'/'O' writes byte/word from the port
