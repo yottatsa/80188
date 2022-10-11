@@ -30,9 +30,10 @@ _mon:
 _init:
 	mov	ax, 0x0000
 	mov	ds, ax
-	mov	es, ax
-	mov	[_ES], ax
-	mov	[_SI], ax
+	mov	word [_ES], 0x0000
+	mov	es, [_ES]
+	mov	word [_SI], 0x0100
+	mov	si, [_SI]
 
 _mainloop:
 	
@@ -106,6 +107,10 @@ _input:
 	je	_mainloop
 	cmp	al, "R"
 	je	_mon
+	cmp	al, "%"
+	je	_do_jump
+	cmp	al, 0xd
+	je 	_do_last
 	cmp	al, 0xa
 	je 	_do_last
 	cmp	al, 0x20
@@ -149,6 +154,9 @@ _do_seg:
 
 _do_jump:
 ; '%' long jump to the segment:address
+	mov	ax, 0
+	mov	ds, ax
+	jmp	_ES:_SI
 
 _do_print;
 ; '.' prints null-terminated string

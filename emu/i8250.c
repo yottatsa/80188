@@ -51,6 +51,8 @@ void set_term_quiet_input() {
 void inputhandler() {
   if (poll(&pfd, 1, 0) > 0) {
     char c = getchar();
+    if (c == 0x0a) 
+      c = 0x0d;
     buffer = c;
     i8250.lsr = UART_LSR_THREMPTY | UART_LSR_RBRDATA;
     if (verbose)
