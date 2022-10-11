@@ -30,3 +30,5 @@ emu/*.o
 emu/cmos.bin
 emu/fake86
 emu/fake86-*/
+
+examples/*.d

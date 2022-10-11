@@ -1,4 +1,4 @@
-; Provides interface to BIOS routines.
+; Provides interface to Nano-BIOS routines.
 
 %ifdef NOSYM
 GLOBAL _warmreset, _putch, _puts, _getch, _putbyte, _putdec, _version

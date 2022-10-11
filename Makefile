@@ -4,25 +4,31 @@ _def: help
 help:
 	@echo 'make [ help | run | all | emu | fw | gal | clean ]'
 	@echo '     run: compile emulator and firmware, and run emulator'
+	@echo '     run COM=examples/hello: makes examples/hello if not exists and loads to 0x100'
 	@echo '     all: compile all artifacts for flashing'
 
 run: fw
-	make -C emu run
+ifneq ($(COM),)
+	$(MAKE) -C emu run COM=../$(COM)
+else
+	$(MAKE) -C emu run
+endif
 
 all: fw gal
 
 emu:
-	make -C emu
+	$(MAKE) -C emu
 
 fw:
-	make -C fw
+	$(MAKE) -C fw
 
 gal:
-	make -C gal
+	$(MAKE) -C gal
 
 clean:
-	make -C fw clean
-	make -C gal clean
-	make -C emu clean
+	$(MAKE) -C fw clean
+	$(MAKE) -C gal clean
+	$(MAKE) -C emu clean
+	$(MAKE) -C examples clean
 
 .PHONY: _def help run all emu fw gal clean
