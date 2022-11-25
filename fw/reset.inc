@@ -58,3 +58,11 @@ GLOBAL _warmreset, _putch, _puts, _getch, _putbyte, _putdec, _version
 	__callfar _putdec
 	pop	bx
 %endmacro
+
+%macro	warmreset 0
+%ifdef NOSYM
+	call	0xf000:_warmreset
+%else
+	call	0xf000:(_warmreset & 0xffff)
+%endif
+%endmacro

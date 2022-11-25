@@ -12,10 +12,10 @@ Output file:  reset
 
 Vstart            Start             Stop              Length    Class     Name
            C0000             C0000             C0002  00000002  progbits  .text
-           FE000             FE000             FE000  00000000  progbits  .ibmdata
+           FE000             FE000             FE02B  0000002B  progbits  .ibmdata
            FE05B             FE05B             FE0FC  000000A1  progbits  .ibmtext
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFF72  00000272  progbits  .setup
+           FFD00             FFD00             FFF8B  0000028B  progbits  .setup
            FFFF0             FFFF0            100000  00000010  progbits  .restart
 
 -- Sections (detailed) --------------------------------------------------------
@@ -34,7 +34,7 @@ vfollows:  not defined
 ---- Section .ibmdata ---------------------------------------------------------
 
 class:     progbits
-length:                   0
+length:                  2B
 start:                FE000
 align:     not defined
 follows:   not defined
@@ -67,7 +67,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 272
+length:                 28B
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -107,11 +107,41 @@ Value     Name
 0000FF56  TIMER0_CON
 0000FF5A  TIMER1_MAXCNTA
 0000FF5E  TIMER1_CON
+0000FF3E  PIC_INT3
+0000FF3C  PIC_INT2
+0000FF3A  PIC_INT1
+0000FF38  PIC_INT0
+0000FF36  PIC_DMA1
+0000FF34  PIC_DMA0
+0000FF32  PIC_TIMER
+0000FF30  PIC_ISR
+0000FF2E  PIC_IRR
+0000FF2C  PIC_INSERV
+0000FF2A  PIC_PRIO
+0000FF28  PIC_MASK
+0000FF26  PIC_POLLSTAT
+0000FF24  PIC_POLL
+0000FF22  PIC_EOI
+00000080  PIC_INSERV_I3
+00000040  PIC_INSERV_I2
+00000020  PIC_INSERV_I1
+00000010  PIC_INSERV_I0
+00000008  PIC_INSERV_D1
+00000004  PIC_INSERV_D0
+00000001  PIC_INSERV_TIMER
+00000001  PIC_ISR_IRT0
+00000002  PIC_ISR_IRT1
+00000004  PIC_ISR_IRT2
+00000008  PIC_MASK_MASKED
+00000010  PIC_LTM_LEVEL
 00000000  PCS0
 00000080  PCS1
 00000100  PCS2
 00000180  PCS3
 00000000  UART_BASE
+00000078  BAUD_9600
+0000FF38  UART_PIC_INT
+00000010  UART_PIC_INSERV
 00000000  UART_THR
 00000000  UART_RBR
 00000000  UART_DLL
@@ -143,7 +173,6 @@ Value     Name
 00000002  UART_7BITS
 00000001  UART_6BITS
 00000000  UART_5BITS
-00000078  BAUD_9600
 00000080  RTC_BASE
 00000006  RTC_MODE
 00000080  RTC_SECONDS
@@ -161,17 +190,25 @@ Value     Name
 00000004  RTC_CB_DM_BIN
 00000002  RTC_CB_24
 00000001  RTC_CB_DSE
+0000FF32  SYSTMR_TIMER
+0000FF32  SYSTMR_
 
 
 ---- Section .text ------------------------------------------------------------
 
 Real              Virtual           Name
+           C0000             C0000  _pic_reset
            C0000             C0000  _8250_init
            C0000             C0000  _serial_putch
            C0000             C0000  _serial_getch
            C0000             C0000  _serial_puts
            C0000             C0000  _rtc_reset
            C0000             C0000  _mon
+
+---- Section .ibmdata ---------------------------------------------------------
+
+Real              Virtual           Name
+           FE000             FE000  _id
 
 ---- Section .ibmtext ---------------------------------------------------------
 
@@ -210,30 +247,32 @@ Real              Virtual           Name
 
 Real              Virtual           Name
            FFD00             FFD00  _setup
-           FFD28             FFD28  _soc_failure
-           FFD31             FFD31  _soc_passed
-           FFD38             FFD38  _set_mem
-           FFD4D             FFD4D  _set_pcs
-           FFD5D             FFD5D  _test_setup_rom
-           FFD66             FFD66  _test_setup_rom.loop
-           FFD6D             FFD6D  _test_setup_rom.check
-           FFD77             FFD77  _test_setup_rom.rom_failure
-           FFD80             FFD80  _test_setup_rom.end
-           FFD8D             FFD8D  _set_sp
-           FFDB0             FFDB0  _test_ram_words
-           FFDDC             FFDDC  _test_ram_words.ram_failure
-           FFDDC             FFDDC  _test_ram_words.halt
-           FFDE5             FFDE5  _test_ram_words.end
-           FFDEC             FFDEC  _init_serial
-           FFE22             FFE22  _check_rtc
-           FFE4C             FFE4C  _check_rtc.datetime
-           FFEE9             FFEE9  _check_rtc.bad_rtc
-           FFF0E             FFF0E  _check_rtc.reset_rtc
-           FFF51             FFF51  _check_rtc.end
-           FFF51             FFF51  _finish
-           FFF56             FFF56  _board_ok
-           FFF60             FFF60  _datetime
-           FFF67             FFF67  _bad_rtc
+           FFD0D             FFD0D  _test_setup_rom
+           FFD16             FFD16  _test_setup_rom.loop
+           FFD1D             FFD1D  _test_setup_rom.check
+           FFD27             FFD27  _test_setup_rom.rom_failure
+           FFD30             FFD30  _test_setup_rom.end
+           FFD3D             FFD3D  _platform
+           FFD56             FFD56  _platform.soc_failure
+           FFD5F             FFD5F  _platform.soc_passed
+           FFD66             FFD66  _init_pic
+           FFD74             FFD74  _set_mem
+           FFD84             FFD84  _set_pcs
+           FFD9B             FFD9B  _test_ram_words
+           FFDC7             FFDC7  _test_ram_words.ram_failure
+           FFDC7             FFDC7  _test_ram_words.halt
+           FFDD0             FFDD0  _test_ram_words.end
+           FFDD7             FFDD7  _set_sp
+           FFDFA             FFDFA  _init_serial
+           FFE3B             FFE3B  _check_rtc
+           FFE65             FFE65  _check_rtc.datetime
+           FFF02             FFF02  _check_rtc.bad_rtc
+           FFF27             FFF27  _check_rtc.reset_rtc
+           FFF6A             FFF6A  _check_rtc.end
+           FFF6A             FFF6A  _finish
+           FFF6F             FFF6F  _board_ok
+           FFF79             FFF79  _datetime
+           FFF80             FFF80  _bad_rtc
 
 ---- Section .restart ---------------------------------------------------------
 

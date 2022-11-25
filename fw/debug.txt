@@ -13,34 +13,37 @@ _putdec:
 .leadzero:
 _setup:
 		say_what 0xb007		; jumped to the setup code
-		say_what 0xb105
-_soc_failure:
-		say_what 0xdead
-_soc_passed:
-		say_what 0xc0de
-_set_mem:
-_set_pcs:
 _test_setup_rom:
 .loop:
 .check:
 .rom_failure:
-		say_what 0x0bad
+		say_what 0x0bad		; rom check failed
 .end:
 		say_what bx		; checksum
-		say_what 0x1337		; rom check passed
-_set_sp:
-		say_what ss		; 0x1000
-		say_what sp		; 0xffff
+		say_what 0xc0de		; rom check passed
+_platform:
+.soc_failure:
+		say_what 0xdead		; wrong SOC
+.soc_passed:
+		say_what 0xb105		; x186 SOC registers enabled
+_init_pic:
+_set_mem:
+_set_pcs:
+		say_what 0xcafe		; x186 SOC is ready
 _test_ram_words:
 		say_what si		; ram test address
 		say_what cx		; ram test value to write
 		say_what bx		; ram test value readback
 .ram_failure:
 .halt:
-		say_what 0x2bad
+		say_what 0x2bad		; memory test failed
 .end:
 		say_what 0xcafe		; memory test passed
+_set_sp:
+		say_what ss		; 0x1000
+		say_what sp		; 0xffff
 _init_serial:
+		say_what 0x1337		; we have serial
 _check_rtc:
 .datetime:
 .bad_rtc:

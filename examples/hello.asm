@@ -3,10 +3,10 @@ USE16
 
 %include "reset.inc"
 
+section .text
 org 0x100
-puts _hello
-loop:
-	jmp loop
+	puts _hello
+	warmreset
 
-_hello: db "Hello, world!",0x0a,0
-
+section .data
+_hello: db "Hello, world!",0xa,0

@@ -3,7 +3,7 @@ VPATH = $(FWSYM)
 
 ASMFLAGS = -I$(FWSYM)
 
-sources = hello.asm bf.asm
+sources = hello.asm hellodos.asm bf.asm
 
 all: $(sources:.asm=) 
 
