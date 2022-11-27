@@ -12,19 +12,19 @@ _INPUTNUM equ 0x0004
 _INPUTPOS equ 0x0006
 
 
-segment .text		start=0xc0000	align=256
-; 256k flash monitor entry point
+segment .at		start=0xf0000
+_copyright:	db	"CC-BY-SA, Atsuko Ito <me@atsukoi.to>, 2022", 0
+
+
+segment .text		start=0xf0100	align=256
+; monitor entry point
 _mon:
 	putch	0x0a
-	mov	ax, 0xf000
-	mov 	ds, ax
-	puts	(_version & 0xffff)
-	mov	ax, 0xc000
+	mov	ax, cs
 	mov 	ds, ax
 	puts	.name
 	jmp	_init
-
-.name:	db	" memory monitor",0x0
+.name:	db	"memory monitor", 0
 	
 
 _init:
@@ -158,7 +158,7 @@ _do_jump:
 	mov	ds, ax
 	jmp	_ES:_SI
 
-_do_print;
+_do_print:
 ; '.' prints null-terminated string
 
 ; indirect operations

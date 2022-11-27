@@ -8,21 +8,30 @@ USE16
 %include "platform.inc"
 
 
-segment .text		start=0xc0000	align=256
-; 256k flash monitor stub
-_mon:
-		jmp	_mon
+segment .begin		start=0xc0000
+; 256k flash
 
+segment .at		start=0xf0000
 
-segment .ibmdata	start=0xfe000
+segment .text		start=0xf0100	align=256
+; monitor stub
+; this startpoint is arbitrary
+_mon:		jmp	_mon
+
+segment .ibm		start=0xfe000
 ; IBM PC XT compatible 8KB BIOS starts here
-_id:		db	"CC-BY-SA, Atsuko Ito <me@atsukoi.to>, 2022", 0
+
+segment .ibmid		start=0xfe00d
+		db	"IBM"
+
+segment .ibmcopy	start=0xfe020
+_copyright:	db	"CC-BY-SA, Atsuko Ito <me@atsukoi.to>, 2022", 0
 
 
 segment .ibmtext	start=0xfe05b	progbits
 ; IBM PC XT BIOS entrypoint
-_warmreset:
-		jmp	0xffd0:0
+_warmreset:	jmp	0xffd0:0
+_hwid:		db	"AMD 80C188/SC16C752B/DS12885T ", 0
 
 
 ;segment .text		start=0xfe06.....
@@ -216,7 +225,7 @@ _test_ram_words:
 		say_what 0x2bad		; memory test failed
 		jmp	.halt
 .end:
-		say_what 0xcafe		; memory test passed
+		say_what 0x07ea		; memory test passed
 
 _set_sp:
 		;; ss = (((0x80 - 1) >> 6) << 12)
@@ -236,11 +245,17 @@ _set_sp:
 
 _init_serial:
 		_8250_init BAUD_9600, UART_EFR_AUTOCTS, UART_8BITS, UART_FCR_FIFOSETUP
+		puts	_hwid
 		puts	_board_ok
+		puts	_version
+		puts	_crlf
 
 		say_what 0x1337		; we have serial
 		xor	ax, ax
 		xor	bx, bx
+
+; from this point it's safe to use the stack, BIOS API,
+; and serial IO instead of `say_what`
 
 _check_rtc:
 		mov	dx, RTC_CD
@@ -312,13 +327,14 @@ _check_rtc:
 
 _finish:
 		;sti
-		jmp	0xc000:_mon
+		jmp	0xf000:_mon
 
 ; text constants
 
-_board_ok:	db	"Board OK",0x0a,0x0
-_datetime:	db	"Time: ",0x0
-_bad_rtc:	db	"Bad CMOS: ",0x0
+_crlf:		db	0xd, 0xa, 0
+_board_ok:	db	"Board OK ", 0
+_datetime:	db	"Time: ", 0
+_bad_rtc:	db	"Bad CMOS: ", 0
 
 
 

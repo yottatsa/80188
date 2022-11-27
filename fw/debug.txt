@@ -1,5 +1,3 @@
-_mon:
-_warmreset:
 _putch:
 _puts:
 _getch:
@@ -38,7 +36,7 @@ _test_ram_words:
 .halt:
 		say_what 0x2bad		; memory test failed
 .end:
-		say_what 0xcafe		; memory test passed
+		say_what 0x07ea		; memory test passed
 _set_sp:
 		say_what ss		; 0x1000
 		say_what sp		; 0xffff

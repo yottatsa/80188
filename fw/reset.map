@@ -11,30 +11,56 @@ Output file:  reset
 -- Sections (summary) ---------------------------------------------------------
 
 Vstart            Start             Stop              Length    Class     Name
-           C0000             C0000             C0002  00000002  progbits  .text
-           FE000             FE000             FE02B  0000002B  progbits  .ibmdata
-           FE05B             FE05B             FE0FC  000000A1  progbits  .ibmtext
+           C0000             C0000             C0000  00000000  progbits  .begin
+           F0000             F0000             F0000  00000000  progbits  .at
+           F0100             F0100             F0102  00000002  progbits  .text
+           FE000             FE000             FE000  00000000  progbits  .ibm
+           FE00D             FE00D             FE010  00000003  progbits  .ibmid
+           FE020             FE020             FE04B  0000002B  progbits  .ibmcopy
+           FE05B             FE05B             FE11B  000000C0  progbits  .ibmtext
            FFC00             FFC00             FFC0E  0000000E  progbits  .data
-           FFD00             FFD00             FFF8B  0000028B  progbits  .setup
+           FFD00             FFD00             FFFAC  000002AC  progbits  .setup
            FFFF0             FFFF0            100000  00000010  progbits  .restart
 
 -- Sections (detailed) --------------------------------------------------------
 
----- Section .text ------------------------------------------------------------
+---- Section .begin -----------------------------------------------------------
 
 class:     progbits
-length:                   2
+length:                   0
 start:                C0000
-align:                  100
+align:     not defined
 follows:   not defined
 vstart:               C0000
 valign:    not defined
 vfollows:  not defined
 
----- Section .ibmdata ---------------------------------------------------------
+---- Section .at --------------------------------------------------------------
 
 class:     progbits
-length:                  2B
+length:                   0
+start:                F0000
+align:     not defined
+follows:   not defined
+vstart:               F0000
+valign:    not defined
+vfollows:  not defined
+
+---- Section .text ------------------------------------------------------------
+
+class:     progbits
+length:                   2
+start:                F0100
+align:                  100
+follows:   not defined
+vstart:               F0100
+valign:    not defined
+vfollows:  not defined
+
+---- Section .ibm -------------------------------------------------------------
+
+class:     progbits
+length:                   0
 start:                FE000
 align:     not defined
 follows:   not defined
@@ -42,10 +68,32 @@ vstart:               FE000
 valign:    not defined
 vfollows:  not defined
 
+---- Section .ibmid -----------------------------------------------------------
+
+class:     progbits
+length:                   3
+start:                FE00D
+align:     not defined
+follows:   not defined
+vstart:               FE00D
+valign:    not defined
+vfollows:  not defined
+
+---- Section .ibmcopy ---------------------------------------------------------
+
+class:     progbits
+length:                  2B
+start:                FE020
+align:     not defined
+follows:   not defined
+vstart:               FE020
+valign:    not defined
+vfollows:  not defined
+
 ---- Section .ibmtext ---------------------------------------------------------
 
 class:     progbits
-length:                  A1
+length:                  C0
 start:                FE05B
 align:     not defined
 follows:   not defined
@@ -67,7 +115,7 @@ vfollows:  not defined
 ---- Section .setup -----------------------------------------------------------
 
 class:     progbits
-length:                 28B
+length:                 2AC
 start:                FFD00
 align:     not defined
 follows:   not defined
@@ -197,40 +245,41 @@ Value     Name
 ---- Section .text ------------------------------------------------------------
 
 Real              Virtual           Name
-           C0000             C0000  _pic_reset
-           C0000             C0000  _8250_init
-           C0000             C0000  _serial_putch
-           C0000             C0000  _serial_getch
-           C0000             C0000  _serial_puts
-           C0000             C0000  _rtc_reset
-           C0000             C0000  _mon
+           F0100             F0100  _pic_reset
+           F0100             F0100  _8250_init
+           F0100             F0100  _serial_putch
+           F0100             F0100  _serial_getch
+           F0100             F0100  _serial_puts
+           F0100             F0100  _rtc_reset
+           F0100             F0100  _mon
 
----- Section .ibmdata ---------------------------------------------------------
+---- Section .ibmcopy ---------------------------------------------------------
 
 Real              Virtual           Name
-           FE000             FE000  _id
+           FE020             FE020  _copyright
 
 ---- Section .ibmtext ---------------------------------------------------------
 
 Real              Virtual           Name
            FE05B             FE05B  _warmreset
-           FE060             FE060  _putch
-           FE065             FE065  ..@6.wait_empty
-           FE073             FE073  _puts
-           FE076             FE076  ..@7.loop
-           FE082             FE082  ..@8.wait_empty
-           FE090             FE090  ..@7.end
-           FE094             FE094  _getch
-           FE098             FE098  ..@9.wait_data
-           FE0A3             FE0A3  _putnibble
-           FE0B0             FE0B0  _putnibble.hex
-           FE0B3             FE0B3  _putnibble.print
-           FE0B9             FE0B9  _putbyte
-           FE0CD             FE0CD  _putdec
-           FE0D2             FE0D2  _putdec.reduceprint
-           FE0E1             FE0E1  _putdec.print
-           FE0E7             FE0E7  _putdec.leadzero
-           FE0EC             FE0EC  ..@10.wait_empty
+           FE060             FE060  _hwid
+           FE07F             FE07F  _putch
+           FE084             FE084  ..@10.wait_empty
+           FE092             FE092  _puts
+           FE095             FE095  ..@11.loop
+           FE0A1             FE0A1  ..@12.wait_empty
+           FE0AF             FE0AF  ..@11.end
+           FE0B3             FE0B3  _getch
+           FE0B7             FE0B7  ..@13.wait_data
+           FE0C2             FE0C2  _putnibble
+           FE0CF             FE0CF  _putnibble.hex
+           FE0D2             FE0D2  _putnibble.print
+           FE0D8             FE0D8  _putbyte
+           FE0EC             FE0EC  _putdec
+           FE0F1             FE0F1  _putdec.reduceprint
+           FE100             FE100  _putdec.print
+           FE106             FE106  _putdec.leadzero
+           FE10B             FE10B  ..@14.wait_empty
 
 ---- Section .data ------------------------------------------------------------
 
@@ -264,15 +313,16 @@ Real              Virtual           Name
            FFDD0             FFDD0  _test_ram_words.end
            FFDD7             FFDD7  _set_sp
            FFDFA             FFDFA  _init_serial
-           FFE3B             FFE3B  _check_rtc
-           FFE65             FFE65  _check_rtc.datetime
-           FFF02             FFF02  _check_rtc.bad_rtc
-           FFF27             FFF27  _check_rtc.reset_rtc
-           FFF6A             FFF6A  _check_rtc.end
-           FFF6A             FFF6A  _finish
-           FFF6F             FFF6F  _board_ok
-           FFF79             FFF79  _datetime
-           FFF80             FFF80  _bad_rtc
+           FFE59             FFE59  _check_rtc
+           FFE83             FFE83  _check_rtc.datetime
+           FFF20             FFF20  _check_rtc.bad_rtc
+           FFF45             FFF45  _check_rtc.reset_rtc
+           FFF88             FFF88  _check_rtc.end
+           FFF88             FFF88  _finish
+           FFF8D             FFF8D  _crlf
+           FFF90             FFF90  _board_ok
+           FFF9A             FFF9A  _datetime
+           FFFA1             FFFA1  _bad_rtc
 
 ---- Section .restart ---------------------------------------------------------
 
