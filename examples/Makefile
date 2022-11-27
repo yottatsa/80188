@@ -1,9 +1,9 @@
 FWSYM = ../fw
 VPATH = $(FWSYM)
 
-ASMFLAGS = -I$(FWSYM)
+ASMFLAGS = -I$(FWSYM) -Wlabel-orphan -Werror -Xgnu
 
-sources = hello.asm hellodos.asm bf.asm
+sources = hello.asm hellodos.asm hellobios.asm
 
 all: $(sources:.asm=) 
 

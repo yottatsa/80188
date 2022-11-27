@@ -1210,6 +1210,7 @@ void intcall86 (uint8_t intnum) {
 	uint16_t oldregax;
 	didintr = 1;
 
+#ifdef BIOSINTERRUPTS
 	if (intnum == 0x19) didbootstrap = 1;
 
 	switch (intnum) {
@@ -1274,7 +1275,9 @@ void intcall86 (uint8_t intnum) {
 				return;
 #endif
 		}
+#endif
 
+	if (verbose) printf("interrupt %Xh", intnum);
 	push (makeflagsword() );
 	push (segregs[regcs]);
 	push (ip);

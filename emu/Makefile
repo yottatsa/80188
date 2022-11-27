@@ -19,7 +19,7 @@ fake86: main.c cpu.c ports.c i8253.c i8259.c timing.c parsecl.c stubs.c x186.c i
 run: fake86 $(COM)
 	./$< $(EMUARGS)
 
-debug: fake86
+debug: fake86 $(COM)
 	./$< $(EMUARGS) -verbose
 
 clean:
@@ -28,4 +28,4 @@ clean:
 format: main.h ports.h stubs.c x186.c x186.h i8250.c i8250.h cmos.c
 	clang-format -i $^
 
-.PHONY: all clean run debug format
+.PHONY: all clean run debug format $(COM)
