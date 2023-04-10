@@ -2,6 +2,8 @@
 
 * testing and firmware development: r1
 * hardware development: r2
+  - [CPU card](https://github.com/yottatsa/80188/blob/main/cpu_card/cpu_card/cpu_card.pdf)
+  - [ISP interface](https://github.com/yottatsa/80188/blob/main/cpu_card/isp_interface/isp_interface.pdf)
 
 To emulate
 
